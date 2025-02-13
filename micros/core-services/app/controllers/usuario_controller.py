@@ -1,6 +1,6 @@
 from uuid import uuid4 as uuid
 from ..mysql import Database
-from ..models.usuario_model import CreateUserModel, UpdateUserModel, ConsultUserModel
+from ..models.usuario_model import CreateUserModel, UpdateUserModel, ConsultUserModel, DeleteUsuarioModel
 from ..utils.usuario import hash_password, generar_valor_alfanumerico
 
 
@@ -8,34 +8,29 @@ class UserController:
     async def create_user(self, ip: str, usuarios: CreateUserModel):
         with Database() as db:
             try:
-                if usuarios.user_is_commercial is None:
-                    usuarios.user_is_commercial = False
                 clave = generar_valor_alfanumerico(10)
                 hashed_clave = hash_password(clave)
-                new_id_usuario = str(uuid())
+                id_perfil = usuarios.id_perfil if usuarios.id_perfil is not None else 2
                 query_user = """
                     INSERT INTO usuarios
-                    ( id_usuario, nombre, email, clave, id_perfil)
-                    VALUES( %s, %s, %s, %s, %s);   
+                    ( nombre, email, clave, id_perfil)
+                    VALUES( %s, %s, %s, %s);   
                 """
                 db.execute(
                     query_user,
                     (
-                        new_id_usuario,
                         usuarios.nombre,
                         usuarios.email,
                         hashed_clave,
-                        usuarios.id_perfil
+                        id_perfil
                     ),
                 )
-                toSave = {
-                    "id_usuario": new_id_usuario,
-                    "nombre": usuarios.nombre,
-                    "email": usuarios.email,
-                    "id_perfil": usuarios.id_perfil
-                }
 
-                return True
+                return {
+                    "message": "Usuario creado exitosamente",
+                    "email": usuarios.email,
+                    "id_perfil": id_perfil
+                }
             except Exception as e:
                 print(e)
                 db.rollback()
@@ -77,16 +72,14 @@ class UserController:
     async def delete_user(self, id_usuario: str):
         with Database() as db:
             try:
-                query = """
-                    UPDATE usuarios
-                    SET nombre = CONCAT(nombre, '_deleted'), email = CONCAT(email, '_deleted')
-                    WHERE id_usuario = %s;
-                """
-                db.execute(query, (id_usuario,))
-                return {"message": "Usuario desactivado correctamente"}
+                 db.execute("DELETE FROM usuarios WHERE id_usuario = %s;", (id_usuario,))
+                 db.commit()
+            
+                 return {"message": f"Usuario con id {id_usuario} eliminado correctamente"}
+        
             except Exception as e:
-                await db.rollback()
-                return {"error": str(e)}
+               db.rollback()
+               return {"error": str(e)}
 
     async def update_user(self, id_usuario: str, usuarios: UpdateUserModel):
         with Database() as db:
