@@ -1,13 +1,15 @@
 import MySQLdb
-from .config import Settings, get_env
+from app.config import get_env
 
-settings: Settings = get_env()
+settings = get_env()
+
+
 
 db_config = {
-    "host": Settings.DB_HOST,
-    "user": Settings.DB_USER,
-    "passwd": Settings.DB_PASS,
-    "db": Settings.DB_NAME,
+    "host": settings.DB_HOST,
+    "user":  settings.DB_USER,
+    "passwd":  settings.DB_PASS,
+    "db":  settings.DB_NAME,
 }
 
 class Database:

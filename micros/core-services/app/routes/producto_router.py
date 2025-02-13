@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, HTTPException
+from fastapi import APIRouter, Response
 from ..controllers.producto_controller import ProductController
 from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel
 

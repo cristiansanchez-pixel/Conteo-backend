@@ -6,9 +6,11 @@ from fastapi import APIRouter
 from fastapi.staticfiles import StaticFiles
 from .utils.authJwt import get_current_user
 from .routes import (auth_router,
-    email_router,
-    permission_router,
-    profile_router,)
+    inventario_router,
+    perfil_router,
+    permisos_router,
+    usuario_router,
+    producto_router)
 
 app = FastAPI()
 
@@ -25,22 +27,29 @@ app.add_middleware(
 app.include_router(auth_router.router, tags=["auth"])
 
 app.include_router(
-    permission_router.router,
+    permisos_router.router,
     tags=["permission"],
     dependencies=[Depends(get_current_user)],
 )
 app.include_router(
-    profile_router.router,
+    perfil_router.router,
     tags=["profile"],
     dependencies=[Depends(get_current_user)],
 )
 app.include_router(
-    email_router.router,
-    tags=["email"],
+   inventario_router.router,
+    tags=["inventory"],
+)
+app.include_router(
+   usuario_router.router,
+    tags=["user"],
+)
+app.include_router(
+   producto_router.router,
+    tags=["product"],
 )
 @app.get("/", response_class=RedirectResponse, include_in_schema=False)
 async def docs():
     return RedirectResponse(url="/docs")
 
 
-app.mount("/files", StaticFiles(directory="files"), name="static")

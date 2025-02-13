@@ -1,6 +1,17 @@
 from pydantic import BaseModel
 
 #Modelo de datos para manejar usuarios, en este caso se manejan los campos que se van a usar en la creación de usuarios
+
+class UsuarioModel(BaseModel):
+    id_usuario: str | None = None
+    nombre: str | None = None
+    email: str | None = None
+    clave: str | None = None
+    id_perfil: str | None = None
+    frcha_creacion: int | None = None
+
+
+
 class CreateUserModel(BaseModel):
     nombre: str
     email: str

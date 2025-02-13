@@ -1,7 +1,6 @@
 from uuid import uuid4 as uuid
 from ..mysql import Database
 from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel
-from ..utils.producto import CreateProductoModel, UpdateProductoModel, ConsultProductoModel
 
 class ProductController:
     async def create_producto(self, producto: CreateProductoModel):
@@ -66,7 +65,7 @@ class ProductController:
                 print(e)
                 db.rollback()
                 return {"error": str(e)}
-              
+
     async def update_producto(self, id_producto: str, producto: UpdateProductoModel):
         with Database() as db:
             try:

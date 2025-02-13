@@ -1,4 +1,5 @@
 import os
+from uuid import uuid4 as uuid
 from datetime import datetime, timedelta
 from typing import Any, Union
 from fastapi import Depends, HTTPException, status
@@ -10,7 +11,7 @@ from ..config import get_env
 from ..mysql import Database
 from ..models.usuario_model import UsuarioModel
 from ..models.auth_model import TokenPayload
-from uuid import uuid4 as uuid
+
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 1440 minutes = 24 horas
 ALGORITHM = "HS256"
@@ -40,43 +41,8 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
     to_encode = {"exp": expires_delta, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
     return encoded_jwt
-  
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="auth/lg", scheme_name="JWT")
 
-def get_current_user(token: str = Depends(reuseable_oauth)):
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-        token_data = TokenPayload(**payload)
-
-        if datetime.fromtimestamp(payload["exp"]) < datetime.now():
-            print("Token expired")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        user = get_user_by_email(token_data.sub)
-
-        if token_data.iss is None or token_data.iss != get_env().MICROS_HASH:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token issuer",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        if user.user_status != "active":
-            return False
-
-        return user
-
-    except (jwt.JWTError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-  
 def get_user_by_email(email: str):
     with Database() as db:
         try:
@@ -106,7 +72,7 @@ def get_user_by_email(email: str):
         except Exception as e:
             print(e)
             return None
-          
+        
 def get_current_user(token: str = Depends(reuseable_oauth)):
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])

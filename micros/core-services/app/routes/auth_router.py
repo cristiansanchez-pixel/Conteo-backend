@@ -11,7 +11,7 @@ from ..models.auth_model import ValidateTokenPayload
 router = APIRouter()
 
 #endpoint para autenticaciónde usuarios
-@router.post("/lg", summary="create access token for user")
+@router.post("/login", summary="create access token for user")
 def login(
     user: OAuth2PasswordRequestForm = Depends(),
     response: Response = None,
@@ -30,7 +30,7 @@ def login(
             "email": usuarios.email,
             "id": usuarios.id_usuario,
             "permisos": get_permisos(usuarios.id_perfil),
-            "access_token": create_access_token(usuarios.user_email),
+            "access_token": create_access_token(usuarios.email),
         },
     }
     

@@ -1,7 +1,7 @@
 from fastapi import Response, status, Request
 from passlib.context import CryptContext
 from app.utils.authJwt import get_user_by_email
-#from app.utils.audit import save_login
+from app.utils.audit import save_login
 
 
 def validate_user(email: str, password: str, response: Response, request: Request):
@@ -19,6 +19,6 @@ def validate_user(email: str, password: str, response: Response, request: Reques
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return None
 
-    #save_login(user.user_id, user.ente_id, request.client.host)
+    save_login(user.user_id, user.ente_id, request.client.host)
 
     return user
