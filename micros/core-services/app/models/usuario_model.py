@@ -8,7 +8,7 @@ class UsuarioModel(BaseModel):
     email: str | None = None
     clave: str | None = None
     id_perfil: str | None = None
-    frcha_creacion: int | None = None
+    fecha_creacion: int | None = None
 
 
 
@@ -35,9 +35,6 @@ class UpdateUserModel(BaseModel):
 
 
 class ConsultUserModel(BaseModel):
-    id_usuario: str
-    nombre: str
-    email: str
     #user_document: str
     #user_cellphone: str
     id_perfil: str

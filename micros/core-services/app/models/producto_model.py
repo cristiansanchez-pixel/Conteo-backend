@@ -9,15 +9,13 @@ class CreateProductoModel(BaseModel):
     conteo: int
     
 class UpdateProductoModel(BaseModel):
-    id_producto: str
     descripcion: str
     cantidad: int
     data: Optional[str]=None
-    conteo: int
     
 class ConsultProductoModel(BaseModel):
     id_producto: str
-    descripcion: str
-    cantidad: int
-    data: Optional[str]=None
-    conteo: int
+    
+class DeleteProductoModel(BaseModel):
+    id_producto: str
+    

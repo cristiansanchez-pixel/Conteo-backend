@@ -32,7 +32,7 @@ class InventarioController:
   async def get_all_inventarios(self):
     with Database() as db:
       try:
-        query = "SELECT id_inventario, id_usuario, usuarios_id_perfil, nombre_inventario FROM `inventarios`"
+        query = "SELECT id_inventario, id_usuario, usuarios_id_perfil, nombre_inventario FROM inventarios"
         db.execute(query)
         inventarios = db.fetchall()
         
@@ -77,7 +77,6 @@ class InventarioController:
               inventario.id_usuario,  
               inventario.usuarios_id_perfil,
               inventario.nombre_inventario,
-              inventario.id_inventario
           ),
         )
         

@@ -3,13 +3,13 @@ from typing import List
 
 
 class Permiso(BaseModel):
-    id_permiso: str | None = None
+    id_permiso: int | None = None
     nombre_permiso: str
     descripcion_permiso: str
 
 
 class Profile(BaseModel):
-    id_perfil: str
+    id_perfil: int
 
 
 class CreatePermisos(BaseModel):
@@ -22,4 +22,4 @@ class CreatePermisoPerfil(BaseModel):
     nombre_permiso: str
     descripcion_permiso: str | None = None
     perfil: str
-    id_usuario: str
+    id_usuario: int

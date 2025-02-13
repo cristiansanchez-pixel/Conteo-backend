@@ -36,3 +36,4 @@ def get_env():
     return Settings()
 
 settings = get_env()
+settings = Settings()

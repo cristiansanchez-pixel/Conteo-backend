@@ -1,6 +1,9 @@
 from uuid import uuid4 as uuid
 from ..mysql import Database
-from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel
+from ..models.producto_model import (CreateProductoModel, 
+                                     UpdateProductoModel, 
+                                     ConsultProductoModel,
+                                     DeleteProductoModel)
 
 class ProductController:
     async def create_producto(self, producto: CreateProductoModel):
@@ -10,7 +13,7 @@ class ProductController:
                 query_product = """
                     INSERT INTO conteo.productos
                     (id_producto, descripcion, cantidad, data, conteo)
-                    VALUES(%s, %s, %s, %s);
+                    VALUES(%s, %s, %s, %s, %s);
                 """
                 db.execute(
                     query_product,
@@ -32,7 +35,7 @@ class ProductController:
     async def get_all_productos(self):
         with Database() as db:
             try:
-                query = "SELECT id_producto, descripcion, cantidad, conteo data FROM `productos`"
+                query = "SELECT id_producto, descripcion, cantidad, conteo, data FROM `productos`"
                 db.execute(query)
                 productos = db.fetchall()
                 
@@ -71,7 +74,7 @@ class ProductController:
             try:
                 query = """
                     UPDATE productos
-                    descripcion = %s, cantidad = %s, data = %s, conteo = %s
+                    SET descripcion = %s, cantidad = %s, data = %s, conteo = %s
                     WHERE id_producto = %s;
                 """
                 db.execute(
@@ -86,6 +89,24 @@ class ProductController:
                 )
                 db.commit()
                 return {"id_producto": id_producto, "descripcion": producto.descripcion}
+            except Exception as e:
+                print(e)
+                db.rollback()
+                return {"error": str(e)}
+            
+    async def delete_producto(self, id_producto: str):
+        with Database() as db:
+            try:
+                check_query = "SELECT id_producto FROM productos WHERE id_producto = %s"
+                db.execute(check_query, (id_producto,))
+                if not db.fetchone():
+                    return {"error": "Producto no encontrado"}
+                
+                query = "DELETE FROM productos WHERE id_producto = %s"
+                db.execute(query, (id_producto,))
+                db.commit()
+                return {"id_producto": id_producto}
+            
             except Exception as e:
                 print(e)
                 db.rollback()
