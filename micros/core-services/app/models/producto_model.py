@@ -2,19 +2,40 @@ from pydantic import BaseModel
 from typing import Optional
 
 class CreateProductoModel(BaseModel):
-    id_producto: str
-    descripcion: str
-    cantidad: int
+    id_usuario: int | None = None
+    id_perfil: int | None = None
+    id_inventario: int | None = None
+    id_producto: int | None = None
+    nombre: str | None = None
+    descripcion: str | None = None
+    cantidad: int | None = None
     data: Optional[str]=None
-    conteo: int
+    conteo: int | None = None
     
 class UpdateProductoModel(BaseModel):
+    nombre: str
     descripcion: str
     cantidad: int
     data: Optional[str]=None
     
 class ConsultProductoModel(BaseModel):
-    id_producto: str
+    id_usuario: int | None = None
+    id_perfil: int | None = None
+    id_inventario: int | None = None
+    id_producto: int | None = None
+    nombre: str | None = None
+    descripcion: str | None = None
+    cantidad: int | None = None
+    data: Optional[str]=None
+    conteo: int | None = None
+    
+class ConsultAllProductoModel(BaseModel):
+    id_producto: int | None = None
+    nombre: str | None = None
+    descripcion: str | None = None
+    cantidad: int | None = None
+    data: Optional[str]=None
+    conteo: int | None = None
     
 class DeleteProductoModel(BaseModel):
     id_producto: str

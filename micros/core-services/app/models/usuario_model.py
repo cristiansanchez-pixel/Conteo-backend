@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional 
+from datetime import datetime
 
 #Modelo de datos para manejar usuarios, en este caso se manejan los campos que se van a usar en la creación de usuarios
 
@@ -22,20 +23,22 @@ class CreateUserModel(BaseModel):
 
 
 class UpdateUserModel(BaseModel):
-    nombre: str
-    email: str
-    clave: str
-    id_perfil: str
+    nombre: Optional[str] = Field(None, description="Nombre del usuario")
+    email: Optional[str] = Field(None, description="Correo del usuario")
+    clave: Optional[str] = Field(None, description="Clave del usuario")
+    id_perfil: Optional[str] = Field(None, description="Perfil del usuario")
+    id_usuario: str
 
 
 
 class ConsultUserModel(BaseModel):
-    id_perfil: int
+    nombre: Optional[str]
+    email: Optional[str]
+    clave: Optional[str]
+    id_perfil: str
+    id_usuario: str
     nombre_perfil: str
-    id_usuario: int
-    fecha_creacion: int
-    ip: str | None = None
-    last_login: int | None = None
+    fecha_creacion: datetime
     
 class DeleteUsuarioModel(BaseModel):
     id_usuario: int

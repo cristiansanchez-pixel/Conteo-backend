@@ -46,3 +46,12 @@ async def update_user(id_usuario: str, user: UpdateUserModel, response: Response
     else:
         response.status_code = 400
     return res
+
+
+@router.get("/getAllUsers", summary="Get user by id")
+async def get_all_users(response: Response):
+    usuario_controller = UserController()  # Instancia correcta
+    res = await usuario_controller.get_all_users()  # Llamada correcta
+
+    response.status_code = 200 if res else 400
+    return res
