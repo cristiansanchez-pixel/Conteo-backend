@@ -3,7 +3,7 @@ import string
 from passlib.context import CryptContext
 
 
-password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def generar_valor_alfanumerico(longitud: int) -> str:
@@ -12,4 +12,4 @@ def generar_valor_alfanumerico(longitud: int) -> str:
 
 
 def hash_password(password: str) -> str:
-    return password_context.hash(password)
+    return pwd_context.hash(password)

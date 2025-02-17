@@ -85,6 +85,8 @@ class UserController:
     async def update_user(self, id_usuario: str, usuarios: UpdateUserModel):
         with Database() as db:
             try:
+                clave = generar_valor_alfanumerico(10)
+                hashed_clave = hash_password(clave)
                 # Obtener los datos actuales del usuario
                 old_user = await self.get_user_by_id(id_usuario)
                 if not old_user:
@@ -101,7 +103,7 @@ class UserController:
                 # Aplicar la función a cada campo
                 nombre = keep_old_value(usuarios.nombre, old_user.nombre)
                 email = keep_old_value(usuarios.email, old_user.email)
-                clave = keep_old_value(usuarios.clave, old_user.clave)
+                clave = keep_old_value(hashed_clave, old_user.clave)
                 id_perfil = keep_old_value(usuarios.id_perfil, old_user.id_perfil)
 
                 query = """
@@ -136,7 +138,8 @@ class UserController:
                     SELECT 
                         u.id_usuario, 
                         u.nombre, 
-                        u.email, 
+                        u.email,
+                        u.clave, 
                         u.id_perfil,
                         p.nombre_perfil,
                         u.fecha_creacion
@@ -151,9 +154,10 @@ class UserController:
                         "id_usuario": user[0],
                         "nombre": user[1],
                         "email": user[2],
-                        "id_perfil": user[3],
-                        "nombre_perfil": user[4],
-                        "fecha_creacion": user[5],
+                        "clave": user[3],
+                        "id_perfil": user[4],
+                        "nombre_perfil": user[5],
+                        "fecha_creacion": user[6],
                     }
                     for user in usuarios
                 ]

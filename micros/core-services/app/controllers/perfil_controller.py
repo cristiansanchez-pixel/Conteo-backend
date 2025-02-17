@@ -8,24 +8,21 @@ class PerfilController:
     async def create_perfil(self, ip: str, perfil: CreatePerfil):
         with Database() as db:
             try:
-                id_perfil = str(uuid())
-                nombre_formateado = ProfileUtils.format_profile_name(perfil.nombre_perfil)
                 query_profile = """
                     INSERT INTO conteo.perfiles
-                    (id_perfil, nombre_perfil, descripcion_perfil)
-                    VALUES(%s, %s, %s);
+                    (nombre_perfil, descripcion_perfil)
+                    VALUES(%s, %s);
                 """
                 db.execute(
                     query_profile,
                     (
-                        id_perfil,
-                        nombre_formateado,
+                        perfil.nombre_perfil,
                         perfil.descripcion_perfil,
                     ),
                 )
                 to_save = [
-                    ("profile id", "id_perfil", id_perfil, False),
-                    ("profile name", "nombre_perfil", perfil.nombre_perfil, True),
+                    ("profile id", "id_perfil", False),
+                    ("profile name", "nombre_perfil", True),
                 ]
                 save_audit_user(
                     db,

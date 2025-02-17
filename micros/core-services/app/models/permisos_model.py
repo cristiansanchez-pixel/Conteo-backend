@@ -13,13 +13,13 @@ class Profile(BaseModel):
 
 
 class CreatePermisos(BaseModel):
-    permiso: Permiso
-    perfil: List[Profile]
-    id_usuario: str
-
-
-class CreatePermisoPerfil(BaseModel):
     nombre_permiso: str
-    descripcion_permiso: str | None = None
-    perfil: str
-    id_usuario: int
+    descripcion_permiso: str
+
+
+
+# class CreatePermisoPerfil(BaseModel):
+#     nombre_permiso: str
+#     descripcion_permiso: str | None = None
+#     perfil: str
+#     id_usuario: int

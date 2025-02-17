@@ -38,7 +38,7 @@ class ProductController:
     async def get_all_productos(self):
         with Database() as db:
             try:
-                query = "SELECT id_producto, nombre, descripcion, cantidad, conteo, data FROM `productos`"
+                query = "SELECT id_producto, nombre, descripcion, cantidad, data, conteo FROM `productos`"
                 db.execute(query)
                 productos = db.fetchall()
                 
@@ -65,7 +65,7 @@ class ProductController:
     async def get_producto_by_id(self, id_producto: str, producto: ConsultProductoModel):
         with Database() as db:
             try:
-                query = "SELECT id_usuario, id_perfil, id_producto, descripcion, cantidad, data, conteo FROM `productos` WHERE id_producto = %s"
+                query = "SELECT id_usuario, id_perfil, id_inventario, id_producto, nombre, descripcion, cantidad, data, conteo FROM `productos` WHERE id_producto = %s"
                 db.execute(query, (id_producto,))
                 producto = db.fetchone()
                 if not producto:
@@ -73,11 +73,13 @@ class ProductController:
                 return ConsultProductoModel(
                     id_usuario=producto[0],
                     id_perfil=producto[1],
-                    id_producto=producto[2],
-                    descripcion=producto[3],
-                    cantidad=producto[4],
-                    data=producto[5],
-                    conteo=producto[6]
+                    id_inventario=producto[2],
+                    id_producto=producto[3],
+                    nombre=producto[4],
+                    descripcion=producto[5],
+                    cantidad=producto[6],
+                    data=producto[7],
+                    conteo=producto[8]
                 )
             except Exception as e:
                 print(e)
@@ -89,12 +91,13 @@ class ProductController:
             try:
                 query = """
                     UPDATE productos
-                    SET descripcion = %s, cantidad = %s, data = %s, conteo = %s
+                    SET nombre=%s, descripcion = %s, cantidad = %s, data = %s, conteo = %s
                     WHERE id_producto = %s;
                 """
                 db.execute(
                     query,
                     (
+                        producto.nombre,
                         producto.descripcion,
                         producto.cantidad,
                         producto.data,
@@ -103,7 +106,7 @@ class ProductController:
                     ),
                 )
                 db.commit()
-                return {"id_producto": id_producto, "descripcion": producto.descripcion}
+                return {"id_producto": id_producto, "nombre": producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo}
             except Exception as e:
                 print(e)
                 db.rollback()
@@ -126,4 +129,6 @@ class ProductController:
                 print(e)
                 db.rollback()
                 return {"error": str(e)}
+    
+
 

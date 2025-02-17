@@ -13,6 +13,7 @@ from ..models.usuario_model import UsuarioModel
 from ..models.auth_model import TokenPayload
 
 
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 1440 minutes = 24 horas
 ALGORITHM = "HS256"
 # should be kept secret
@@ -20,14 +21,19 @@ JWT_SECRET_KEY = get_env().JWT_SECRET_KEY
 # should be kept secret
 JWT_REFRESH_SECRET_KEY = get_env().JWT_REFRESH_SECRET_KEY
 
-password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def get_hashed_password(password: str) -> str:
-    return password_context.hash(password)
+    return pwd_context.hash(password)
 
 
 def verify_password(password: str, hashed_pass: str) -> bool:
-    return password_context.verify(password, hashed_pass)
+    print(f"Contraseña en texto plano: '{password}'")
+    print(f"Hash almacenado: '{hashed_pass}'")
+    result = pwd_context.verify(password, hashed_pass)
+    print(f"Resultado de la verificación: {result}")
+    return pwd_context.verify(password, hashed_pass)
 
 
 def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> str:
@@ -41,8 +47,7 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
     to_encode = {"exp": expires_delta, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
     return encoded_jwt
-reuseable_oauth = OAuth2PasswordBearer(tokenUrl="auth/lg", scheme_name="JWT")
-
+reuseable_oauth = OAuth2PasswordBearer(tokenUrl="auth/login", scheme_name="JWT")
 def get_user_by_email(email: str):
     with Database() as db:
         try:
@@ -60,6 +65,9 @@ def get_user_by_email(email: str):
                     u.email = %s"""
             db.execute(query, (email,))
             user = db.fetchone()
+            if not user:
+                return None
+            
             usuario = UsuarioModel()
             usuario.id_usuario = user[0]
             usuario.nombre = user[1]
@@ -94,9 +102,6 @@ def get_current_user(token: str = Depends(reuseable_oauth)):
                 detail="Invalid token issuer",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-
-        if user.user_status != "active":
-            return False
 
         return user
 

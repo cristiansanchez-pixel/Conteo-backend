@@ -13,9 +13,10 @@ class CreateProductoModel(BaseModel):
     conteo: int | None = None
     
 class UpdateProductoModel(BaseModel):
-    nombre: str
-    descripcion: str
-    cantidad: int
+    nombre: Optional[str]
+    descripcion: Optional[str]
+    cantidad: Optional[int]
+    conteo: Optional[int]
     data: Optional[str]=None
     
 class ConsultProductoModel(BaseModel):

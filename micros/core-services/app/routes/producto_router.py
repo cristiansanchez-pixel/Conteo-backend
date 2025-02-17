@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Response, Request
+from fastapi import APIRouter, Response, Request, Body
 from ..controllers.producto_controller import ProductController
-from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel, ConsultAllProductoModel
+from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel, DeleteProductoModel
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ async def get_producto_by_id(response: Response, id_producto: str):
   return res
 
 @router.put("/updateProducto/{id_producto}", summary="Update product")
-async def update_producto(id_producto: str, producto: UpdateProductoModel, response: Response):
+async def update_producto(id_producto: str, response: Response, producto: UpdateProductoModel = Body(...)):
   res = await ProductController().update_producto(id_producto, producto)
   if res:
     response.status_code = 200
@@ -38,3 +38,12 @@ async def get_all_productos(response: Response):
 
     response.status_code = 200 if res else 400
     return res
+  
+@router.delete("/deleteProducto/{id_producto}", summary="Delete Product")
+async def delete_producto(id_producto: str):
+  res = await ProductController().delete_producto(id_producto)
+  if res:
+    return {"message": "Producto eliminado con exito"}
+  else:
+    return {"message": "Producto no encontrado o fallo eliminación"}, 400
+  

@@ -14,9 +14,8 @@ class PermisosPerfiles(BaseModel):
 
 
 class CreatePerfil(BaseModel):
-    id_perfil: int | None = None
-    profile: Perfil
-    permisos_perfiles: List[PermisosPerfiles]
+    nombre_perfil: str
+    descripcion_perfil: str
 
 class UpdatePerfilModel(BaseModel):
     profile: Perfil
