@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response
 from ..controllers.inventario_controller import InventarioController
 from ..models.inventario_model import CreateInventarioModel, UpdateInventarioModel, ConsultInventarioModel
+from ..models.paginator_model import PaginatorSearch
 
 router = APIRouter()
 
@@ -16,6 +17,21 @@ async def create_inventario(inventario: CreateInventarioModel, response: Respons
 @router.get("/inventarios/{id_inventario}", summary="Get inventory by id")
 async def get_inventario_by_id(response: Response, id_inventario: str):
   res = await InventarioController().get_inventario_by_id(id_inventario)
+  if res:
+    response.status_code = 200
+  else:
+    response.status_code = 400
+  return res
+
+@router.get("/getAllInventarios", summary="Get all inventories")
+async def get_all_inventarios(response: Response, id_inventario: str, paginator: PaginatorSearch):
+
+  filter = paginator.filter
+  order_by = paginator.order_by
+  order = paginator.order
+  current_page = paginator.current_page
+  page_size = paginator.page_size
+  res = await InventarioController().get_all_inventarios(id_inventario, current_page, page_size, filter, order_by, order)
   if res:
     response.status_code = 200
   else:

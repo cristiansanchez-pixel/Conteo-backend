@@ -9,8 +9,8 @@ class UserController:
     async def create_user(self, ip: str, usuarios: CreateUserModel):
         with Database() as db:
             try:
-                clave = generar_valor_alfanumerico(10)
-                hashed_clave = hash_password(clave)
+                
+                hashed_clave = hash_password(usuarios.clave)
                 id_perfil = usuarios.id_perfil if usuarios.id_perfil is not None else 2
                 query_user = """
                     INSERT INTO usuarios
@@ -85,8 +85,7 @@ class UserController:
     async def update_user(self, id_usuario: str, usuarios: UpdateUserModel):
         with Database() as db:
             try:
-                clave = generar_valor_alfanumerico(10)
-                hashed_clave = hash_password(clave)
+                hashed_clave = hash_password(usuarios.clave)
                 # Obtener los datos actuales del usuario
                 old_user = await self.get_user_by_id(id_usuario)
                 if not old_user:

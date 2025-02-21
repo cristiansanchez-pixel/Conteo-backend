@@ -1,6 +1,6 @@
 from uuid import uuid4 as uuid
 from ..mysql import Database
-from ..models.inventario_model import CreateInventarioModel
+from ..models.inventario_model import CreateInventarioModel, ConsultInventarioModel
 
 
 class InventarioController:
@@ -10,16 +10,15 @@ class InventarioController:
         id_inventario = str(uuid())
         query_inventario = """
           INSERT INTO inventarios
-          (id_inventario, id_usuario, usuarios_id_perfil, nombre_inventario)
-          VALUES(%s, %s, %s, %s);
+          (id_inventario, nombre_inventario, id_usuario)
+          VALUES(%s, %s, %s);
         """
         db.execute(
           query_inventario,
           (
               id_inventario,
-              inventario.id_usuario,  
-              inventario.usuarios_id_perfil,
-              inventario.nombre_inventario
+              inventario.nombre_inventario,
+              11
           ),
         )
         db.commit()
@@ -29,24 +28,124 @@ class InventarioController:
         db.rollback()
         return {"error": str(e)}
       
-  async def get_all_inventarios(self):
+  async def get_all_inventarios(self, id_inventario: str, current_page, page_size, filter, order_by, order):
     with Database() as db:
-      try:
-        query = "SELECT id_inventario, id_usuario, usuarios_id_perfil, nombre_inventario FROM inventarios"
-        db.execute(query)
-        inventarios = db.fetchall()
+        total = 0
+        list_inventarios = []
+        params_total = []
+        params = []
+        try:
+            params_total.append(id_inventario)
+            query_total = "SELECT COUNT(id_inventario) FROM `inventarios`"
+            if filter != None and filter != "":
+                query_total += """ AND (nombre_inventario LIKE %s) """
+                params_total.append(f"%{filter}%")
+            db.execute(query_total, params_total)
+            total = db.fetchone()[0]
+
+            query = """
+                SELECT 
+                    i.nombre_inventario
+                FROM `inventarios` AS i
+            """
+            if filter != None and filter != "":
+                query += """ WHERE nombre_inventario LIKE %s """
+                params.append(f"%{filter}%")
+
+            query += " ORDER BY i.nombre_inventario ASC"
+
+            if order_by != None and order_by != "":
+                query += " , " + order_by
+                if order != None and order != "":
+                    query += " " + order
+            if current_page != None and page_size != None:
+                query += " LIMIT %s OFFSET %s"
+                params.append(page_size)
+                params.append((current_page - 1) * page_size)
+
+            db.execute(query, params)
+            inventarios = db.fetchall()
+
+            for inventario in inventarios:
+                list_inventarios.append(
+                    {"nombre_inventario": inventario[0]}
+                )
+            return {"total": total, "inventories": list_inventarios}
+        except Exception as e:
+            print(e)
+            return {"error": str(e)}
+
+      
+  # async def get_all_inventarios(self, id_inventario: str, current_page, page_size, filter, order_by, order):
+  #       with Database() as db:
+  #           total = 0
+  #           list_inventarios = []
+  #           params_total = []
+  #           params = []
+  #           try:
+  #               params_total.append(id_inventario)
+  #               query_total = "SELECT COUNT(id_inventario) FROM `inventarios` WHERE (fecha_creacion = %s IS NULL)"
+  #               if filter != None and filter != "":
+  #                   query_total += """ AND (nombre_inventario LIKE %s) """
+  #                   params_total.append(f"%{filter}%")
+  #               db.execute(query_total, params_total)
+  #               total = db.fetchone()[0]
+            
+  #               query = """
+  #                   SELECT 
+  #                       i.nombre_inventario, 
+  #                       COALESCE(latest_login.auus_ip, 'N/A') AS last_login_ip,
+  #                       COALESCE(latest_login.auus_date, 'N/A') AS last_login_date
+  #                   FROM `inventarios` AS i
+  #                   LEFT JOIN perfiles AS p ON u.id_perfil = p.id_perfil
+  #                   LEFT JOIN (
+  #                       SELECT 
+  #                           auus_usuario,
+  #                           auus_ip,
+  #                           auus_date
+  #                       FROM `audit_usuarios` AS au
+  #                       WHERE au.auus_description = 'Login'
+  #                       AND au.auus_date = (
+  #                           SELECT MAX(au2.auus_date)
+  #                       FROM `audit_usuarios` AS au2
+  #                           WHERE au2.auus_usuario = au.auus_usuario
+  #                           AND au2.auus_description = 'Login'
+  #                       )
+  #                   ) AS latest_login ON u.id_usuario = latest_login.auus_usuario
+  #                   WHERE (i.id_inventario = %s)
+  #                   """
+  #               params.append(id_inventario)
+  #               if filter != None and filter != "":
+  #                   query += """ AND (nombre_inventario LIKE %s) """
+  #                   params.append(f"%{filter}%")
         
-        if not inventarios:
-          return []                
-        
-        return [
-          CreateInventarioModel(
-            id_inventario=inventario[0], id_usuario=inventario[1], usuarios_id_perfil=inventario[2], nombre_inventario=inventario[3]
-          ) for inventario in inventarios
-        ]
-      except Exception as e:
-        print(e)
-        return {"error": str(e)}
+  #               query += " ORDER BY u.id_usuario DESC"
+                
+  #               if order_by != None and order_by != "":
+  #                   query += " , " + order_by
+  #                   if order != None and order != "":
+  #                       query += " " + order
+  #               if current_page != None and page_size != None:
+  #                   query += " LIMIT %s OFFSET %s"
+  #                   params.append(page_size)
+  #                   params.append((current_page - 1) * page_size)
+                    
+  #               db.execute(query, params)
+  #               inventarios = db.fetchall()
+                
+  #               for inventario in inventarios:
+  #                 list_inventarios.append(
+  #                   ConsultInventarioModel(
+  #                     nombre_inventario = inventario[0],
+  #                     fehca_creacion = inventario[1],
+  #                     id_producto = inventario[2]
+  #                   )
+  #                 ) 
+  #               return {"total": total, "inventories": list_inventarios}
+  #           except Exception as e:
+  #               print(e)
+  #               return {"error": str(e)}
+
       
   async def get_inventario_by_id(self, id_inventario: str):
     with Database() as db:

@@ -2,23 +2,23 @@ from uuid import uuid4 as uuid
 from ..mysql import Database
 
 
-def save_login(user: str, ente: str, ip: str):
+def save_login(user: str, ip: str):
     with Database() as db:
         try:
             query = """
                     INSERT INTO audit_usuarios
-                    (auus_ip, auus_descripcion, auus_accion,  auus_usuario)
+                    (auus_ip, auus_descripcion, auus_action,  auus_usuario)
                     VALUES(%s, %s, NULL, %s);
                 """
 
-            db.execute(query, (ip, "Login", user, ente))
+            db.execute(query, (ip, "Login", user))
         except Exception as e:
             print(e)
             return None
 
 
 def save_audit_user(
-    db, ip, actions: list, user: str, ente: str, description: str, target_user: str
+    db, ip, actions: list, user: str, description: str, target_user: str
 ):
     try:
         with Database() as db:
@@ -43,7 +43,7 @@ def save_audit_user(
             """
 
             db.execute(
-                query, (id, ip, description, str(toSave), user, ente, target_user)
+                query, (id, ip, description, str(toSave), user, target_user)
             )
     except Exception as e:
         print(e)
