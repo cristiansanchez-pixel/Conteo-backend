@@ -1,10 +1,10 @@
 from uuid import uuid4 as uuid
 from ..mysql import Database
 from ..models.producto_model import (CreateProductoModel, 
-                                     UpdateProductoModel, 
-                                     ConsultProductoModel,
-                                     DeleteProductoModel,
-                                     ConsultAllProductoModel)
+                                    UpdateProductoModel, 
+                                    ConsultProductoModel,
+                                    DeleteProductoModel,
+                                    ConsultAllProductoModel)
 
 class ProductController:
     async def create_producto(self, producto: CreateProductoModel):
@@ -49,12 +49,12 @@ class ProductController:
                     ConsultAllProductoModel(
                         #   id_usuario=producto[0],
                         #   id_perfil=producto[1],
-                          id_producto=producto[0],
-                          nombre=producto[1],
-                          descripcion=producto[2],
-                          cantidad=producto[3],
-                          data=producto[4],
-                          conteo=producto[5]
+                        id_producto=producto[0],
+                        nombre=producto[1],
+                        descripcion=producto[2],
+                        cantidad=producto[3],
+                        data=producto[4],
+                        conteo=producto[5]
                     ) for producto in productos
                 ]
             except Exception as e:
@@ -62,24 +62,21 @@ class ProductController:
                 db.rollback()
                 return {"error": str(e)}
 
-    async def get_producto_by_id(self, id_producto: str, producto: ConsultProductoModel):
+    async def get_producto_by_barcode(self, codigo_barras: int, producto: ConsultProductoModel):
         with Database() as db:
             try:
-                query = "SELECT id_usuario, id_perfil, id_inventario, id_producto, nombre, descripcion, cantidad, data, conteo FROM `productos` WHERE id_producto = %s"
-                db.execute(query, (id_producto,))
+                query = "SELECT codigo_barras, nombre, descripcion, cantidad, data, conteo FROM `productos` WHERE codigo_barras = %s"
+                db.execute(query, (codigo_barras,))
                 producto = db.fetchone()
                 if not producto:
                     return None
                 return ConsultProductoModel(
-                    id_usuario=producto[0],
-                    id_perfil=producto[1],
-                    id_inventario=producto[2],
-                    id_producto=producto[3],
-                    nombre=producto[4],
-                    descripcion=producto[5],
-                    cantidad=producto[6],
-                    data=producto[7],
-                    conteo=producto[8]
+                    codigo_barras= producto[0],
+                    nombre=producto[1],
+                    descripcion=producto[2],
+                    cantidad=producto[3],
+                    data=producto[4],
+                    conteo=producto[5]
                 )
             except Exception as e:
                 print(e)

@@ -13,9 +13,9 @@ async def create_producto(producto: CreateProductoModel, response: Response, req
         response.status_code = 404
     return res
   
-@router.get("/getProductsByid", summary="Get product by id")
-async def get_producto_by_id(response: Response, id_producto: str):
-  res = await ProductController().get_producto_by_id(id_producto, producto=ConsultProductoModel)
+@router.get("/getProductsByBarcode", summary="Get product by bar code")
+async def get_producto_by_barcode(response: Response, codigo_barras: int):
+  res = await ProductController().get_producto_by_barcode(codigo_barras, producto=ConsultProductoModel)
   if res:
     response.status_code = 200
   else:

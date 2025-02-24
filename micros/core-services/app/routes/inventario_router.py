@@ -24,19 +24,15 @@ async def get_inventario_by_id(response: Response, id_inventario: str):
   return res
 
 @router.get("/getAllInventarios", summary="Get all inventories")
-async def get_all_inventarios(response: Response, id_inventario: str, paginator: PaginatorSearch):
+async def get_all_inventarios(response: Response, id_inventario: str, filter: str = None, order_by: str = None, order: str = None):
+    # Llama a la función del controlador
+    res = await InventarioController().get_all_inventarios(id_inventario, filter, order_by, order)
+    if res:
+        response.status_code = 200
+    else:
+        response.status_code = 400
+    return res
 
-  filter = paginator.filter
-  order_by = paginator.order_by
-  order = paginator.order
-  current_page = paginator.current_page
-  page_size = paginator.page_size
-  res = await InventarioController().get_all_inventarios(id_inventario, current_page, page_size, filter, order_by, order)
-  if res:
-    response.status_code = 200
-  else:
-    response.status_code = 400
-  return res
 
 @router.put("/inventarios/{id_inventario}", summary="Update inventory")
 async def update_inventario(id_inventario: str, inventario: UpdateInventarioModel, response: Response):

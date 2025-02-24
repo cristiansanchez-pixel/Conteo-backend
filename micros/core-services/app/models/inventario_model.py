@@ -23,3 +23,4 @@ class ConsultInventarioModel(BaseModel):
     
 class ConsultAllInventarioModel(BaseModel):
     nombre_inventario: str
+    fecha_creacion: datetime
