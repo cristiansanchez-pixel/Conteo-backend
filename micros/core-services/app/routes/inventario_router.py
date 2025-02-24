@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, Query
 from ..controllers.inventario_controller import InventarioController
 from ..models.inventario_model import CreateInventarioModel, UpdateInventarioModel, ConsultInventarioModel
 from ..models.paginator_model import PaginatorSearch
@@ -24,13 +24,18 @@ async def get_inventario_by_id(response: Response, id_inventario: str):
   return res
 
 @router.get("/getAllInventarios", summary="Get all inventories")
-async def get_all_inventarios(response: Response, id_inventario: str, filter: str = None, order_by: str = None, order: str = None):
-    # Llama a la función del controlador
-    res = await InventarioController().get_all_inventarios(id_inventario, filter, order_by, order)
-    if res:
-        response.status_code = 200
-    else:
+async def get_all_inventarios(
+  response: Response, 
+  filter: str = None, 
+  order_by: str = Query(None, regex="^(nombre_inventario|cantidad_productos)$"), 
+  order: str = Query(None, regex="^(ASC|DESC)$"),
+  ):
+    
+    res = await InventarioController().get_all_inventarios(filter, order_by, order)
+    if "error" in res:
         response.status_code = 400
+    else:
+        response.status_code = 200
     return res
 
 

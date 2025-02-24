@@ -22,9 +22,9 @@ async def get_producto_by_barcode(response: Response, codigo_barras: int):
     response.status_code = 400
   return res
 
-@router.put("/updateProducto/{id_producto}", summary="Update product")
-async def update_producto(id_producto: str, response: Response, producto: UpdateProductoModel = Body(...)):
-  res = await ProductController().update_producto(id_producto, producto)
+@router.put("/updateProducto/{codigo_barras}", summary="Update product")
+async def update_producto(codigo_barras: str, response: Response, producto: UpdateProductoModel = Body(...)):
+  res = await ProductController().update_producto(codigo_barras, producto)
   if res:
     response.status_code = 200
   else:

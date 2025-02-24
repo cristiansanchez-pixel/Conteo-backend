@@ -27,8 +27,7 @@ class ProductController:
                         producto.cantidad,
                         producto.conteo
                     ),
-                )
-               
+                )               
                 return {"id_usuario":producto.id_usuario,"id_perfil":producto.id_perfil ,"id_inventario":producto.id_inventario ,"nombre":producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo}
             except Exception as e:
                 print(e)
@@ -83,13 +82,13 @@ class ProductController:
                 db.rollback()
                 return {"error": str(e)}
 
-    async def update_producto(self, id_producto: str, producto: UpdateProductoModel):
+    async def update_producto(self, codigo_barras: str, producto: UpdateProductoModel):
         with Database() as db:
             try:
                 query = """
                     UPDATE productos
                     SET nombre=%s, descripcion = %s, cantidad = %s, data = %s, conteo = %s
-                    WHERE id_producto = %s;
+                    WHERE codigo_barras = %s;
                 """
                 db.execute(
                     query,
@@ -99,11 +98,11 @@ class ProductController:
                         producto.cantidad,
                         producto.data,
                         producto.conteo,
-                        id_producto,
+                        codigo_barras,
                     ),
                 )
                 db.commit()
-                return {"id_producto": id_producto, "nombre": producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo}
+                return {"codigo_barras": codigo_barras, "nombre": producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo}
             except Exception as e:
                 print(e)
                 db.rollback()
