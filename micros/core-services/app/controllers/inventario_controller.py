@@ -53,7 +53,8 @@ class InventarioController:
               query = """  
                   SELECT 
                       i.nombre_inventario,
-                      COUNT(p.id_producto) AS cantidad_productos
+                      COUNT(p.id_producto) AS cantidad_productos,
+                      i.fecha_creacion
                   FROM inventarios AS i
                   LEFT JOIN productos AS p ON i.id_inventario = p.id_inventario
                 
@@ -64,7 +65,7 @@ class InventarioController:
 
               query += " GROUP BY i.id_inventario"
             
-              if order_by in ["nombre_inventario", "cantidad_productos"] and order in ["ASC", "DESC"]:
+              if order_by in ["nombre_inventario", "cantidad_productos", "fecha_creacion"] and order in ["ASC", "DESC"]:
                   query += f" ORDER BY {order_by} {order}"
               else:
                   query += " ORDER BY i.nombre_inventario ASC"
@@ -77,7 +78,8 @@ class InventarioController:
                   list_inventarios.append(
                       {
                           "nombre_inventario": inventario[0],
-                          "cantidad_productos": inventario[1]
+                          "cantidad_productos": inventario[1],
+                          "fecha_creacion": inventario[2]
                       }
                   )
               return {"total": total, "inventories": list_inventarios}
