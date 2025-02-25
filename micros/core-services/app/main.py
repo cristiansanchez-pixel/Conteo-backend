@@ -18,7 +18,8 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:9001", "http://127.0.0.1:5500"],
+    # allow_origins=["http://127.0.0.1:9001", "http://127.0.0.1:5500"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,7 +38,7 @@ app.include_router(
     dependencies=[Depends(get_current_user)],
 )
 app.include_router(
-   inventario_router.router,
+    inventario_router.router,
     tags=["inventory"],
 )
 app.include_router(

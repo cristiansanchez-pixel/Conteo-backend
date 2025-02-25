@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Response, Request, Body
+from fastapi import APIRouter, Response, Request, Body, File, UploadFile, FastAPI
 from ..controllers.producto_controller import ProductController
 from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel, DeleteProductoModel
+import openpyxl
 
 router = APIRouter()
+app = FastAPI()
 
 @router.post("/createProducto", summary="Create a product")
 async def create_producto(producto: CreateProductoModel, response: Response, request: Request):
@@ -46,4 +48,30 @@ async def delete_producto(id_producto: str):
     return {"message": "Producto eliminado con exito"}
   else:
     return {"message": "Producto no encontrado o fallo eliminación"}, 400
+  
+@app.post("/api/upload")
+async def upload_file(file: UploadFile = File(...)):
+    try:
+        # Guardar el archivo temporalmente
+        with open("uploaded_file.xlsx", "wb") as f:
+            f.write(await file.read())  # Escribir el archivo en disco
+
+        # Abrir el archivo Excel
+        wb = openpyxl.load_workbook("uploaded_file.xlsx")
+        sheet = wb.active
+
+        # Leer las cabeceras de las columnas (primera fila)
+        headers = [cell.value for cell in sheet[1]]
+
+        # Leer los datos, usando las cabeceras dinámicas
+        productos = []
+        for row in sheet.iter_rows(min_row=2, values_only=True):  # Empezamos desde la segunda fila
+            producto = {}
+            for header, value in zip(headers, row):
+                producto[header] = value  # Asignar cada columna a su correspondiente cabecera
+            productos.append(producto)
+
+        return {"productos": productos}
+    except Exception as e:
+        return {"error": str(e)}
   

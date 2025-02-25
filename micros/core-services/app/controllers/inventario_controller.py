@@ -28,7 +28,7 @@ class InventarioController:
           db.rollback()
           return {"error": str(e)}
       
-    async def get_all_inventarios(self, filter = None, order_by = None, order = None):
+    async def get_all_inventarios(self, filter = None, order_by = None, order = None, current_page=None, page_size=None):
       with Database() as db:
           total = 0
           list_inventarios = []
@@ -44,7 +44,7 @@ class InventarioController:
 
               query_total = "SELECT COUNT(id_inventario) FROM inventarios"
               if filter:
-                  query_total += " AND nombre_inventario LIKE %s"
+                  query_total += "WHERE nombre_inventario LIKE %s"
                   params_total.append(f"%{filter}%")
                 
               db.execute(query_total, params_total)
@@ -54,9 +54,12 @@ class InventarioController:
                   SELECT 
                       i.nombre_inventario,
                       COUNT(p.id_producto) AS cantidad_productos,
-                      i.fecha_creacion
+                      SUM(CASE WHEN p.conteo IS NOT NULL AND p.conteo > 0 THEN 1 ELSE 0 END) AS cantidad_productos_con_conteo,
+                      i.fecha_creacion,
+                      i.fecha_lectura
                   FROM inventarios AS i
-                  LEFT JOIN productos AS p ON i.id_inventario = p.id_inventario
+                  LEFT JOIN productos AS p 
+                    ON i.id_inventario = p.id_inventario
                 
               """
               if filter:
@@ -65,10 +68,14 @@ class InventarioController:
 
               query += " GROUP BY i.id_inventario"
             
-              if order_by in ["nombre_inventario", "cantidad_productos", "fecha_creacion"] and order in ["ASC", "DESC"]:
+              if order_by in ["nombre_inventario", "cantidad_productos", "cantidad_productos_con_conteo", "fecha_creacion", "fecha_lectura"] and order in ["ASC", "DESC"]:
                   query += f" ORDER BY {order_by} {order}"
               else:
                   query += " ORDER BY i.nombre_inventario ASC"
+              if current_page != None and page_size != None:
+                    query += " LIMIT %s OFFSET %s"
+                    params.append(page_size)
+                    params.append((current_page - 1) * page_size)
 
 
               db.execute(query, params)
@@ -79,7 +86,9 @@ class InventarioController:
                       {
                           "nombre_inventario": inventario[0],
                           "cantidad_productos": inventario[1],
-                          "fecha_creacion": inventario[2]
+                          "cantidad_productos_con_conteo": inventario[2],
+                          "fecha_creacion": inventario[3],
+                          "fecha_lectura": inventario[4]
                       }
                   )
               return {"total": total, "inventories": list_inventarios}

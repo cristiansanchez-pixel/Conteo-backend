@@ -3,7 +3,9 @@ from ..controllers.inventario_controller import InventarioController
 from ..models.inventario_model import CreateInventarioModel, UpdateInventarioModel, ConsultInventarioModel
 from ..models.paginator_model import PaginatorSearch
 
+
 router = APIRouter()
+
 
 @router.post("/createInventario", summary="Create an inventory")
 async def create_inventario(inventario: CreateInventarioModel, response: Response):
@@ -29,9 +31,11 @@ async def get_all_inventarios(
   filter: str = None, 
   order_by: str = Query(None, regex="^(nombre_inventario|cantidad_productos)$"), 
   order: str = Query(None, regex="^(ASC|DESC)$"),
+  current_page: int = Query(1, ge=1),
+  page_size: int = Query(10, ge=1) 
   ):
     
-    res = await InventarioController().get_all_inventarios(filter, order_by, order)
+    res = await InventarioController().get_all_inventarios(filter, order_by, order, current_page, page_size)
     if "error" in res:
         response.status_code = 400
     else:
