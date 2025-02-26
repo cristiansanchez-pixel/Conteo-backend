@@ -7,26 +7,25 @@ class InventarioController:
     async def create_inventario(self, inventario: CreateInventarioModel):
       with Database() as db:
         try:
-          id_inventario = str(uuid())
-          query_inventario = """
-            INSERT INTO inventarios
-            (id_inventario, nombre_inventario, id_usuario)
-            VALUES(%s, %s, %s);
-          """
-          db.execute(
-            query_inventario,
-            (
-                id_inventario,
-                inventario.nombre_inventario,
-                11
-            ),
-          )
-          db.commit()
-          return {"id_inventario": id_inventario, "nombre_inventario": inventario.nombre_inventario}
+            query_inventario = """
+                INSERT INTO inventarios (nombre_inventario, id_usuario, usuarios_id_perfil)
+                VALUES (%s, %s, (SELECT id_perfil FROM usuarios WHERE id_usuario = %s));
+            """
+            db.execute(
+                query_inventario,
+                (
+                    inventario.nombre_inventario,
+                    inventario.id_usuario,
+                    inventario.id_usuario  # Aquí usamos el id_usuario para obtener el id_perfil
+                ),
+            )
+            db.commit()
+            return {"nombre_inventario": inventario.nombre_inventario, "id_usuario": inventario.id_usuario}
+
         except Exception as e:
-          print(e)
-          db.rollback()
-          return {"error": str(e)}
+            print(e)
+            db.rollback()
+            return {"error": str(e)}
       
     async def get_all_inventarios(self, filter = None, order_by = None, order = None, current_page=None, page_size=None):
       with Database() as db:
@@ -188,30 +187,29 @@ class InventarioController:
         try:
           query_inventario = """
             UPDATE inventarios
-            SET id_usuario = %s, usuarios_id_perfil = %s, nombre_inventario = %s
+            SET id_usuario = %s, nombre_inventario = %s
             WHERE id_inventario = %s;
           """
           db.execute(
             query_inventario,
             (
-                inventario.id_usuario,  
-                inventario.usuarios_id_perfil,
+                inventario.id_usuario,
                 inventario.nombre_inventario,
             ),
           )
         
-          for producto in inventario.productos:  
-            query_update_producto = """
-            UPDATE productos
-            SET descripcion = %s, cantidad = %s, data = %s, conteo = %s
-            WHERE id_producto = %s AND id_inventario = %s;
-            """
-            db.execute(
-            query_update_producto,
-            (producto.descripcion, producto.cantidad, producto.data, producto.conteo, producto.id_producto, id_inventario),
-              )
+          # for producto in inventario.productos:  
+          #   query_update_producto = """
+          #   UPDATE productos
+          #   SET descripcion = %s, cantidad = %s, data = %s, conteo = %s
+          #   WHERE id_producto = %s AND id_inventario = %s;
+          #   """
+          #   db.execute(
+          #   query_update_producto,
+          #   (producto.descripcion, producto.cantidad, producto.data, producto.conteo, producto.id_producto, id_inventario),
+          #     )
           db.commit()
-          return {"message": "Inventario y productos actualizados correctamente", "id_inventario": id_inventario}
+          return {"message": "Inventarioactualizado correctamente", "id_inventario": id_inventario}
         except Exception as e:
           print(e)
           db.rollback()

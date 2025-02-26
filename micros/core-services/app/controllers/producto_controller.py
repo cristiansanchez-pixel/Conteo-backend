@@ -13,22 +13,21 @@ class ProductController:
                 #id_inventario = inventarios.id_inventario if inventarios.id_inventario is not None else 1
                 query_product = """
                     INSERT INTO productos
-                    (id_usuario, id_perfil,id_inventario, nombre, descripcion, cantidad, conteo)
-                    VALUES(%s, %s, %s, %s, %s, %s, %s);
+                    (codigo_barras, id_usuario, nombre_inventario, nombre, descripcion, cantidad)
+                    VALUES(%s, %s, %s, %s, %s, %s);
                 """
                 db.execute(
                     query_product,
                     (
+                        producto.codigo_barras,
                         producto.id_usuario,
-                        producto.id_perfil,
-                        producto.id_inventario,
+                        producto.nombre_inventario,
                         producto.nombre,
                         producto.descripcion,
-                        producto.cantidad,
-                        producto.conteo
+                        producto.cantidad
                     ),
                 )               
-                return {"id_usuario":producto.id_usuario,"id_perfil":producto.id_perfil ,"id_inventario":producto.id_inventario ,"nombre":producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo}
+                return {"codigo_barras": producto.codigo_barras , "id_usuario":producto.id_usuario, "nombre_inventario":producto.nombre_inventario ,"nombre":producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad}
             except Exception as e:
                 print(e)
                 db.rollback()
@@ -37,7 +36,7 @@ class ProductController:
     async def get_all_productos(self):
         with Database() as db:
             try:
-                query = "SELECT id_producto, nombre, descripcion, cantidad, data, conteo FROM `productos`"
+                query = "SELECT id_producto, codigo_barras, nombre, descripcion, cantidad, data, conteo FROM `productos`"
                 db.execute(query)
                 productos = db.fetchall()
                 
@@ -46,14 +45,13 @@ class ProductController:
                 
                 return [
                     ConsultAllProductoModel(
-                        #   id_usuario=producto[0],
-                        #   id_perfil=producto[1],
                         id_producto=producto[0],
-                        nombre=producto[1],
-                        descripcion=producto[2],
-                        cantidad=producto[3],
-                        data=producto[4],
-                        conteo=producto[5]
+                        codigo_barras= producto[1],
+                        nombre=producto[2],
+                        descripcion=producto[3],
+                        cantidad=producto[4],
+                        data=producto[5],
+                        conteo=producto[6]
                     ) for producto in productos
                 ]
             except Exception as e:
