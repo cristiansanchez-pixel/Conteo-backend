@@ -7,20 +7,38 @@ class InventarioController:
     async def create_inventario(self, inventario: CreateInventarioModel):
       with Database() as db:
         try:
+            # Obtener id_perfil del usuario
+            query_perfil = "SELECT id_perfil FROM usuarios WHERE id_usuario = %s"
+            db.execute(query_perfil, (inventario.id_usuario,))
+            perfil_result = db.fetchone()
+            
+            if not perfil_result:
+                return {"error": "Usuario no encontrado"}
+
+            id_perfil = perfil_result[0]  # Extraemos el id_perfil
+            
+            # Insertar en inventarios
             query_inventario = """
                 INSERT INTO inventarios (nombre_inventario, id_usuario, usuarios_id_perfil)
-                VALUES (%s, %s, (SELECT id_perfil FROM usuarios WHERE id_usuario = %s));
+                VALUES (%s, %s, %s);
             """
             db.execute(
                 query_inventario,
-                (
-                    inventario.nombre_inventario,
-                    inventario.id_usuario,
-                    inventario.id_usuario  # Aquí usamos el id_usuario para obtener el id_perfil
-                ),
+                (inventario.nombre_inventario, inventario.id_usuario, id_perfil),
             )
+            
+            query_last_id = "SELECT LAST_INSERT_ID();"
+            db.execute(query_last_id)
+            id_inventario = db.fetchone()[0]
+            
             db.commit()
-            return {"nombre_inventario": inventario.nombre_inventario, "id_usuario": inventario.id_usuario}
+            return {
+                "id_inventario": id_inventario,
+                "nombre_inventario": inventario.nombre_inventario,
+                "id_usuario": inventario.id_usuario,
+                "id_perfil": id_perfil
+            }
+            
 
         except Exception as e:
             print(e)
