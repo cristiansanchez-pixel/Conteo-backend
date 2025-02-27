@@ -43,7 +43,7 @@ app.include_router(
 )
 app.include_router(
    usuario_router.router,
-    tags=["user"],
+   tags=["user"],
 )
 app.include_router(
    producto_router.router,

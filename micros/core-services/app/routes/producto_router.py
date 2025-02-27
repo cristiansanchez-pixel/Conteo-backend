@@ -7,12 +7,13 @@ router = APIRouter()
 app = FastAPI()
 
 @router.post("/createProducto", summary="Create a product")
-async def create_producto(producto: CreateProductoModel, response: Response, request: Request):
+async def create_producto(producto: CreateProductoModel, response: Response):
     res = await ProductController().create_producto(producto)
-    if res:
-        response.status_code = 200
+    print(producto)
+    if "error" not in res:  # Verifica si no hubo un error
+        response.status_code = 201  # Código 201 para "Creado"
     else:
-        response.status_code = 404
+        response.status_code = 400  # Código 400 para "Solicitud Incorrecta"
     return res
   
 @router.get("/getProductsByBarcode", summary="Get product by bar code")

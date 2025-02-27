@@ -13,23 +13,41 @@ class ProductController:
                 #id_inventario = inventarios.id_inventario if inventarios.id_inventario is not None else 1
                 query_product = """
                     INSERT INTO productos
-                    (codigo_barras, id_usuario, nombre_inventario, nombre, descripcion, cantidad)
-                    VALUES(%s, %s, %s, %s, %s, %s);
+                    (codigo_barras, 
+                    id_usuario,  
+                    id_perfil,
+                    id_inventario,
+                    nombre, 
+                    descripcion, 
+                    cantidad)
+                    VALUES(%s, %s, %s, %s, %s, COALESCE(%s, NULL), %s);
                 """
-                db.execute(
-                    query_product,
-                    (
+                # db.execute(
+                #     query_product,
+                params=(
                         producto.codigo_barras,
                         producto.id_usuario,
-                        producto.nombre_inventario,
+                        producto.id_perfil,
+                        producto.id_inventario,
                         producto.nombre,
-                        producto.descripcion,
+                        producto.descripcion if producto.descripcion else None,
                         producto.cantidad
                     ),
-                )               
-                return {"codigo_barras": producto.codigo_barras , "id_usuario":producto.id_usuario, "nombre_inventario":producto.nombre_inventario ,"nombre":producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad}
+                # )  
+                print("Parámetros a ejecutar:", params)  # Agrega esta línea para depuración
+
+            # Ejecuta la consulta con los parámetros verificados
+                db.execute(query_product, params)
+                db.commit()             
+                return {"codigo_barras": producto.codigo_barras,
+                        "id_usuario":producto.id_usuario,
+                        "id_inventario":producto.id_inventario,
+                        "id_perfil":producto.id_perfil,
+                        "nombre":producto.nombre,
+                        "descripcion": producto.descripcion,
+                        "cantidad": producto.cantidad}
             except Exception as e:
-                print(e)
+                print("Error en la ejecución:", e)
                 db.rollback()
                 return {"error": str(e)}
     

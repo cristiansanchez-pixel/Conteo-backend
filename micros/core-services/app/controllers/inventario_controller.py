@@ -4,6 +4,7 @@ from ..models.inventario_model import CreateInventarioModel, ConsultInventarioMo
 
 
 class InventarioController:
+    
     async def create_inventario(self, inventario: CreateInventarioModel):
       with Database() as db:
         try:

@@ -2,13 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 class CreateProductoModel(BaseModel):
-    id_usuario: int | None = None
-    nombre_inventario: int | None = None
-    nombre: str | None = None
-    descripcion: str | None = None
-    cantidad: int | None = None
-    data: Optional[str]=None
-    codigo_barras: str | None = None
+    codigo_barras: str
+    id_usuario: str
+    id_inventario: str
+    id_perfil: str
+    nombre: str
+    descripcion: Optional[str] = None
+    cantidad: str
     
     
 class UpdateProductoModel(BaseModel):
