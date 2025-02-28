@@ -3,12 +3,12 @@ from typing import Optional
 
 class CreateProductoModel(BaseModel):
     codigo_barras: str
-    id_usuario: str
-    id_inventario: str
-    id_perfil: str
+    id_usuario: int
+    id_perfil: int
+    id_inventario: int
     nombre: str
     descripcion: Optional[str] = None
-    cantidad: str
+    cantidad: int
     
     
 class UpdateProductoModel(BaseModel):

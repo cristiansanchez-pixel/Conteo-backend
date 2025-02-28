@@ -20,25 +20,26 @@ class ProductController:
                     nombre, 
                     descripcion, 
                     cantidad)
-                    VALUES(%s, %s, %s, %s, %s, COALESCE(%s, NULL), %s);
+                    VALUES(%s, %s, %s, %s, %s, %s, %s);
                 """
-                # db.execute(
-                #     query_product,
-                params=(
-                        producto.codigo_barras,
-                        producto.id_usuario,
-                        producto.id_perfil,
-                        producto.id_inventario,
-                        producto.nombre,
-                        producto.descripcion if producto.descripcion else None,
-                        producto.cantidad
-                    ),
+                
+                params = (
+                    producto.codigo_barras,
+                    producto.id_usuario,
+                    producto.id_perfil,
+                    producto.id_inventario,
+                    producto.nombre,
+                    producto.descripcion if producto.descripcion else None,
+                    producto.cantidad
+            )
                 # )  
                 print("Parámetros a ejecutar:", params)  # Agrega esta línea para depuración
 
             # Ejecuta la consulta con los parámetros verificados
                 db.execute(query_product, params)
-                db.commit()             
+                db.commit()        
+                
+                
                 return {"codigo_barras": producto.codigo_barras,
                         "id_usuario":producto.id_usuario,
                         "id_inventario":producto.id_inventario,
