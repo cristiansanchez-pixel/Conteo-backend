@@ -70,6 +70,7 @@ class InventarioController:
 
               query = """  
                   SELECT 
+                      i.id_inventario,
                       i.nombre_inventario,
                       COUNT(p.id_producto) AS cantidad_productos,
                       SUM(CASE WHEN p.conteo IS NOT NULL AND p.conteo > 0 THEN 1 ELSE 0 END) AS cantidad_productos_con_conteo,
@@ -102,11 +103,12 @@ class InventarioController:
               for inventario in inventarios:
                   list_inventarios.append(
                       {
-                          "nombre_inventario": inventario[0],
-                          "cantidad_productos": inventario[1],
-                          "cantidad_productos_con_conteo": inventario[2],
-                          "fecha_creacion": inventario[3],
-                          "fecha_lectura": inventario[4]
+                          "id_inventario": inventario[0],
+                          "nombre_inventario": inventario[1],
+                          "cantidad_productos": inventario[2],
+                          "cantidad_productos_con_conteo": inventario[3],
+                          "fecha_creacion": inventario[4],
+                          "fecha_lectura": inventario[5]
                       }
                   )
               return {"total": total, "inventories": list_inventarios}

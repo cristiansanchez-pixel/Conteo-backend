@@ -52,27 +52,40 @@ class ProductController:
                 db.rollback()
                 return {"error": str(e)}
     
-    async def get_all_productos(self):
+    async def get_all_productos(self, id_inventario: int):
         with Database() as db:
+            total = 0
+            list_productos = []
             try:
-                query = "SELECT id_producto, codigo_barras, nombre, descripcion, cantidad, data, conteo FROM `productos`"
-                db.execute(query)
+                query = """
+                    SELECT p.codigo_barras, p.nombre, p.descripcion, p.cantidad, p.data, p.conteo
+                    FROM productos p
+                    JOIN inventarios i ON p.id_inventario = i.id_inventario
+                    WHERE i.id_inventario = %s
+                """
+                db.execute(query, (id_inventario,))
                 productos = db.fetchall()
+                
+                print("Productos obtenidos:", productos)
                 
                 if not productos:
                     return []                
                 
-                return [
-                    ConsultAllProductoModel(
-                        id_producto=producto[0],
-                        codigo_barras= producto[1],
-                        nombre=producto[2],
-                        descripcion=producto[3],
-                        cantidad=producto[4],
-                        data=producto[5],
-                        conteo=producto[6]
-                    ) for producto in productos
-                ]
+                
+                    
+                for producto in productos:  
+                    list_productos.append(
+                        {
+                        "codigo_barras": producto[0],
+                        "nombre": producto[1],
+                        "descripcion": producto[2],
+                        "cantidad": producto[3],
+                        "data": producto[4],
+                        "conteo": producto[5]
+                    }
+                        )
+                    
+                return {"total": total, "products": list_productos}
             except Exception as e:
                 print(e)
                 db.rollback()

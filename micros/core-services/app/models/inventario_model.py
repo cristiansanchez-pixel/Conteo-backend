@@ -22,5 +22,6 @@ class ConsultInventarioModel(BaseModel):
     productos: Optional[List[CreateProductoModel]] = None
     
 class ConsultAllInventarioModel(BaseModel):
+    id_inventario: int
     nombre_inventario: str
     fecha_creacion: datetime

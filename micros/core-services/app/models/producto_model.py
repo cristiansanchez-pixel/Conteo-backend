@@ -27,12 +27,13 @@ class ConsultProductoModel(BaseModel):
     conteo: int | None = None
     
 class ConsultAllProductoModel(BaseModel):
-    id_producto: int | None = None
+    id_inventario: Optional[int] | None = None
+    codigo_barras: str | None = None
     nombre: str | None = None
     descripcion: str | None = None
     cantidad: int | None = None
     data: Optional[str]=None
-    conteo: int | None = None
+    conteo: Optional[int]| None = None
     
 class DeleteProductoModel(BaseModel):
     id_producto: str

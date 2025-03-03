@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, Request, Body, File, UploadFile, FastAPI
+from fastapi import APIRouter, Response, Request, Body, File, UploadFile, FastAPI, Query
 from ..controllers.producto_controller import ProductController
 from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel, DeleteProductoModel
 # import openpyxl
@@ -34,10 +34,14 @@ async def update_producto(codigo_barras: str, response: Response, producto: Upda
     response.status_code = 400
   return res
 
-@router.get("/getAllProductos", summary="Get user by id")
-async def get_all_productos(response: Response):
-    producto_controller = ProductController()  # Instancia correcta
-    res = await producto_controller.get_all_productos()  # Llamada correcta
+@router.get("/getAllProductos", summary="Get all products")
+async def get_all_productos(
+  response: Response,
+    id_inventario: int = Query(..., description="ID of the inventory")  
+):
+    print(f"Recibido id_inventario: {id_inventario}")
+    producto_controller = ProductController() 
+    res = await producto_controller.get_all_productos(id_inventario)  
 
     response.status_code = 200 if res else 400
     return res
