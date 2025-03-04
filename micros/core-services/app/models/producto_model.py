@@ -17,6 +17,10 @@ class UpdateProductoModel(BaseModel):
     cantidad: Optional[int]
     conteo: Optional[int]
     data: Optional[str]=None
+    id_producto: Optional[int] | None = None
+    id_usuario: Optional[int] | None = None
+    id_perfil: Optional[int] | None = None
+    id_inventario: Optional[int] | None = None
     
 class ConsultProductoModel(BaseModel):
     codigo_barras: int | None = None
@@ -24,7 +28,12 @@ class ConsultProductoModel(BaseModel):
     descripcion: str | None = None
     cantidad: int | None = None
     data: Optional[str]=None
-    conteo: int | None = None
+    conteo: Optional[int] | None = None
+    id_producto: int | None = None
+    id_usuario: int | None = None
+    id_perfil: int | None = None
+    id_inventario: int | None = None
+    
     
 class ConsultAllProductoModel(BaseModel):
     id_inventario: Optional[int] | None = None
@@ -34,7 +43,11 @@ class ConsultAllProductoModel(BaseModel):
     cantidad: int | None = None
     data: Optional[str]=None
     conteo: Optional[int]| None = None
+    id_producto: int | None = None
+    id_usuario: int | None = None
+    id_perfil: int | None = None
+    id_inventario: int | None = None
     
 class DeleteProductoModel(BaseModel):
-    id_producto: str
+    codigo_barras: int
     

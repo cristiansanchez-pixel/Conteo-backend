@@ -5,14 +5,12 @@ from datetime import datetime
 
 class CreateInventarioModel(BaseModel):
     nombre_inventario: str
-    id_usuario: int
+    id_usuario:  Optional[int]
     
 class UpdateInventarioModel(BaseModel):
-    id_inventario: int
     nombre_inventario: str
     id_usuario: str
     usuarios_id_perfil: str
-    productos: Optional[List[CreateProductoModel]] = None
     
 class ConsultInventarioModel(BaseModel):
     id_inventario: int

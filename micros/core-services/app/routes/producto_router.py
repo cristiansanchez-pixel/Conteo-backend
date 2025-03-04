@@ -16,7 +16,7 @@ async def create_producto(producto: CreateProductoModel, response: Response):
         response.status_code = 400  # Código 400 para "Solicitud Incorrecta"
     return res
   
-@router.get("/getProductsByBarcode", summary="Get product by bar code")
+@router.get("/getProductByBarcode", summary="Get product by bar code")
 async def get_producto_by_barcode(response: Response, codigo_barras: int):
   res = await ProductController().get_producto_by_barcode(codigo_barras, producto=ConsultProductoModel)
   if res:
@@ -46,11 +46,13 @@ async def get_all_productos(
     response.status_code = 200 if res else 400
     return res
   
-@router.delete("/deleteProductoByBarcode", summary="Delete Product")
-async def delete_producto_by_barcode(codigo_barras: str):
-    res = await ProductController().delete_producto_by_barcode(codigo_barras)
-    
-    if "error" in res:  # Si hay un error, retorna un mensaje de error con un código 404
-        return {"message": res["error"]}, 404
-    
-    return {"message": "Producto eliminado con éxito"}, 200
+@router.delete("/deleteProducto/{id_producto}", summary="Delete Product")
+async def delete_producto_by_barcode(id_producto: str):
+  res = await ProductController().delete_producto_by_barcode(id_producto)
+  if res:
+    return {"message": "Producto eliminado con exito"}
+  else:
+    return {"message": "Producto no encontrado o fallo eliminación"}, 400
+  
+
+  

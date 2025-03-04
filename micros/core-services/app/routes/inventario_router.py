@@ -32,7 +32,7 @@ async def get_all_inventarios(
   order_by: str = Query(None, regex="^(nombre_inventario|cantidad_productos)$"), 
   order: str = Query(None, regex="^(ASC|DESC)$"),
   current_page: int = Query(1, ge=1),
-  page_size: int = Query(10, ge=1) 
+  page_size: int = Query(20, ge=1) 
   ):
     
     res = await InventarioController().get_all_inventarios(filter, order_by, order, current_page, page_size)

@@ -75,11 +75,14 @@ class InventarioController:
                       COUNT(p.id_producto) AS cantidad_productos,
                       SUM(CASE WHEN p.conteo IS NOT NULL AND p.conteo > 0 THEN 1 ELSE 0 END) AS cantidad_productos_con_conteo,
                       i.fecha_creacion,
-                      i.fecha_lectura
+                      i.fecha_lectura,
+                      i.id_usuario,
+                      u.id_perfil
                   FROM inventarios AS i
                   LEFT JOIN productos AS p 
                     ON i.id_inventario = p.id_inventario
-                
+                  LEFT JOIN usuarios AS u
+                    ON i.id_usuario = u.id_usuario
               """
               if filter:
                   query += """ WHERE i.nombre_inventario LIKE %s """
@@ -108,7 +111,9 @@ class InventarioController:
                           "cantidad_productos": inventario[2],
                           "cantidad_productos_con_conteo": inventario[3],
                           "fecha_creacion": inventario[4],
-                          "fecha_lectura": inventario[5]
+                          "fecha_lectura": inventario[5],
+                          "id_usuario": inventario[6],
+                          "id_perfil": inventario[7]
                       }
                   )
               return {"total": total, "inventories": list_inventarios}
@@ -219,16 +224,6 @@ class InventarioController:
             ),
           )
         
-          # for producto in inventario.productos:  
-          #   query_update_producto = """
-          #   UPDATE productos
-          #   SET descripcion = %s, cantidad = %s, data = %s, conteo = %s
-          #   WHERE id_producto = %s AND id_inventario = %s;
-          #   """
-          #   db.execute(
-          #   query_update_producto,
-          #   (producto.descripcion, producto.cantidad, producto.data, producto.conteo, producto.id_producto, id_inventario),
-          #     )
           db.commit()
           return {"message": "Inventarioactualizado correctamente", "id_inventario": id_inventario}
         except Exception as e:
