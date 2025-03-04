@@ -138,18 +138,18 @@ class ProductController:
                 db.rollback()
                 return {"error": str(e)}
             
-    async def delete_producto(self, id_producto: str):
+    async def delete_producto_by_barcode(self, codigo_barras: str):
         with Database() as db:
             try:
-                check_query = "SELECT id_producto FROM productos WHERE id_producto = %s"
-                db.execute(check_query, (id_producto,))
+                check_query = "SELECT codigo_barras FROM productos WHERE codigo_barras = %s"
+                db.execute(check_query, (codigo_barras,))
                 if not db.fetchone():
                     return {"error": "Producto no encontrado"}
                 
-                query = "DELETE FROM productos WHERE id_producto = %s"
-                db.execute(query, (id_producto,))
+                query = "DELETE FROM productos WHERE codigo_barras = %s"
+                db.execute(query, (codigo_barras,))
                 db.commit()
-                return {"id_producto": id_producto}
+                return {"id_producto": codigo_barras}
             
             except Exception as e:
                 print(e)

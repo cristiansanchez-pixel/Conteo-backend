@@ -46,37 +46,11 @@ async def get_all_productos(
     response.status_code = 200 if res else 400
     return res
   
-@router.delete("/deleteProducto/{id_producto}", summary="Delete Product")
-async def delete_producto(id_producto: str):
-  res = await ProductController().delete_producto(id_producto)
-  if res:
-    return {"message": "Producto eliminado con exito"}
-  else:
-    return {"message": "Producto no encontrado o fallo eliminación"}, 400
-  
-# @app.post("/api/upload")
-# async def upload_file(file: UploadFile = File(...)):
-#     try:
-#         # Guardar el archivo temporalmente
-#         with open("uploaded_file.xlsx", "wb") as f:
-#             f.write(await file.read())  # Escribir el archivo en disco
-
-#         # Abrir el archivo Excel
-#         wb = openpyxl.load_workbook("uploaded_file.xlsx")
-#         sheet = wb.active
-
-#         # Leer las cabeceras de las columnas (primera fila)
-#         headers = [cell.value for cell in sheet[1]]
-
-#         # Leer los datos, usando las cabeceras dinámicas
-#         productos = []
-#         for row in sheet.iter_rows(min_row=2, values_only=True):  # Empezamos desde la segunda fila
-#             producto = {}
-#             for header, value in zip(headers, row):
-#                 producto[header] = value  # Asignar cada columna a su correspondiente cabecera
-#             productos.append(producto)
-
-#         return {"productos": productos}
-#     except Exception as e:
-#         return {"error": str(e)}
-  
+@router.delete("/deleteProductoByBarcode", summary="Delete Product")
+async def delete_producto_by_barcode(codigo_barras: str):
+    res = await ProductController().delete_producto_by_barcode(codigo_barras)
+    
+    if "error" in res:  # Si hay un error, retorna un mensaje de error con un código 404
+        return {"message": res["error"]}, 404
+    
+    return {"message": "Producto eliminado con éxito"}, 200
