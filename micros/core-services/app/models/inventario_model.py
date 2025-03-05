@@ -4,13 +4,14 @@ from ..models.producto_model import CreateProductoModel
 from datetime import datetime 
 
 class CreateInventarioModel(BaseModel):
+    id_inventario: Optional[str]
+    id_usuario:  Optional[str]
     nombre_inventario: str
-    id_usuario:  Optional[int]
+    
     
 class UpdateInventarioModel(BaseModel):
     nombre_inventario: str
-    id_usuario: str
-    usuarios_id_perfil: str
+    id_usuario: int
     
 class ConsultInventarioModel(BaseModel):
     id_inventario: int
