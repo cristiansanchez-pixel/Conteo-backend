@@ -1,6 +1,7 @@
+from typing import List
 from fastapi import APIRouter, Response, Query, Path, HTTPException
 from ..controllers.inventario_controller import InventarioController
-from ..models.inventario_model import CreateInventarioModel, UpdateInventarioModel, ConsultInventarioModel
+from ..models.inventario_model import ConsultInventariosDashboard, CreateInventarioModel, UpdateInventarioModel, ConsultInventarioModel
 from ..models.paginator_model import PaginatorSearch
 
 
@@ -67,9 +68,9 @@ async def delete_inventario(id_inventario: str, response: Response):
     response.status_code = 400
   return res
 
-@router.get("/dashboard/{id_inventario}", summary="Get inventory dashboard")
-async def get_inventarios_dashboard(id_inventario: str, response: Response):
-    res = await InventarioController().get_inventarios_dashboard(id_inventario)
+@router.get("/dashboard", summary="Get inventory dashboard")
+async def get_inventarios_dashboard(response: Response) -> List[ConsultInventariosDashboard]:
+    res = await InventarioController().get_inventarios_dashboard()
     if "error" in res:
         response.status_code = 400
     else:

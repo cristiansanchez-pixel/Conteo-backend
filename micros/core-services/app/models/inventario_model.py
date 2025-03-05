@@ -24,3 +24,11 @@ class ConsultAllInventarioModel(BaseModel):
     id_inventario: int
     nombre_inventario: str
     fecha_creacion: datetime
+    
+class ConsultInventariosDashboard(BaseModel):
+    id_inventario: int
+    nombre_inventario: str
+    cantidad_productos: int
+    cantidad_productos_con_conteo: int
+    cantidad_productos_sin_conteo: int
+    fecha_creacion: datetime

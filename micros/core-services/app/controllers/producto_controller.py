@@ -19,8 +19,9 @@ class ProductController:
                     id_inventario,
                     nombre, 
                     descripcion, 
-                    cantidad)
-                    VALUES(%s, %s, %s, %s, %s, %s, %s);
+                    cantidad,
+                    precio_unidad)
+                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s);
                 """
                 
                 params = (
@@ -30,7 +31,8 @@ class ProductController:
                     producto.id_inventario,
                     producto.nombre,
                     producto.descripcion if producto.descripcion else None,
-                    producto.cantidad
+                    producto.cantidad,
+                    producto.precio_unidad
             )
                 # )  
                 print("Parámetros a ejecutar:", params)  # Agrega esta línea para depuración
@@ -46,7 +48,8 @@ class ProductController:
                         "id_perfil":producto.id_perfil,
                         "nombre":producto.nombre,
                         "descripcion": producto.descripcion,
-                        "cantidad": producto.cantidad}
+                        "cantidad": producto.cantidad,
+                        "precio_unidad": producto.precio_unidad}
             except Exception as e:
                 print("Error en la ejecución:", e)
                 db.rollback()
@@ -65,6 +68,7 @@ class ProductController:
                         p.cantidad, 
                         p.data, 
                         p.conteo,
+                        p.precio_unidad,
                         p.id_producto, 
                         i.id_usuario,     
                         i.usuarios_id_perfil,
@@ -93,10 +97,11 @@ class ProductController:
                         "cantidad": producto[3],
                         "data": producto[4],
                         "conteo": producto[5],
-                        "id_usuario": producto[6],
-                        "usuario_id_perfil": producto[7],
-                        "id_inventario": producto[8],
-                        "id_producto": producto[9]
+                        "precio_unidad": producto[6],
+                        "id_usuario": producto[7],
+                        "usuario_id_perfil": producto[8],
+                        "id_inventario": producto[9],
+                        "id_producto": producto[10]
                     }
                         )
                     
@@ -117,6 +122,7 @@ class ProductController:
                         p.cantidad, 
                         p.data, 
                         p.conteo,
+                        p.precio_unidad,
                         p.id_producto, 
                         i.id_usuario,     
                         i.usuarios_id_perfil,
@@ -137,37 +143,40 @@ class ProductController:
                     cantidad=producto[3],
                     data=producto[4],
                     conteo=producto[5],
-                    id_producto=producto[6],
-                    id_usuario=producto[7],
-                    id_perfil=producto[8],
-                    id_inventario=producto[9]
+                    precio_unidad=producto[6],
+                    id_producto=producto[7],
+                    id_usuario=producto[8],
+                    id_perfil=producto[9],
+                    id_inventario=producto[10]
                 )
             except Exception as e:
                 print(e)
                 db.rollback()
                 return {"error": str(e)}
 
-    async def update_producto(self, codigo_barras: str, producto: UpdateProductoModel):
+    async def update_producto(self, codigo_barras: int, producto: UpdateProductoModel):
         with Database() as db:
             try:
                 query = """
                     UPDATE productos
-                    SET nombre=%s, descripcion = %s, cantidad = %s, data = %s, conteo = %s
+                    SET codigo_barras= %s, nombre=%s, descripcion = %s, cantidad = %s, data = %s, conteo = %s, precio_unidad = %s
                     WHERE codigo_barras = %s;
                 """
                 db.execute(
                     query,
                     (
+                        producto.codigo_barras,
                         producto.nombre,
                         producto.descripcion,
                         producto.cantidad,
                         producto.data,
                         producto.conteo,
+                        producto.precio_unidad,
                         codigo_barras,
                     ),
                 )
                 db.commit()
-                return {"codigo_barras": codigo_barras, "nombre": producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo}
+                return {"codigo_barras": codigo_barras, "nombre": producto.nombre, "descripcion": producto.descripcion, "cantidad": producto.cantidad, "conteo": producto.conteo, "precio_unidad": producto.precio_unidad}
             except Exception as e:
                 print(e)
                 db.rollback()

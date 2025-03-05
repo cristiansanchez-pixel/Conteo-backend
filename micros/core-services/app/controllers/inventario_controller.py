@@ -1,6 +1,7 @@
+from typing import List
 from uuid import uuid4 as uuid
 from ..mysql import Database
-from ..models.inventario_model import CreateInventarioModel, ConsultInventarioModel
+from ..models.inventario_model import CreateInventarioModel, ConsultInventariosDashboard
 
 
 class InventarioController:
@@ -248,64 +249,41 @@ class InventarioController:
           return {"error": str(e)}
         
     
-    async def get_inventarios_dashboard(self, id_inventario: str):
-        with Database() as db:
-            try:
-                # Consulta para obtener inventarios con la cantidad de productos
-                query = """
-                    SELECT
-                        i.id_inventario,
-                        i.nombre_inventario,
-                        COUNT(p.id_producto) AS cantidad_productos,
-                        SUM(CASE WHEN p.conteo IS NOT NULL AND p.conteo > 0 THEN 1 ELSE 0 END) AS cantidad_productos_con_conteo
-                    FROM inventarios i
-                    LEFT JOIN productos p ON i.id_inventario = p.id_inventario
-                    WHERE i.id_usuario = %s
-                    GROUP BY i.id_inventario
-                """
-                db.execute(query, (id_inventario,))
-                inventarios = db.fetchall()
+    async def get_inventarios_dashboard(self) -> List[ConsultInventariosDashboard]:
+      with Database() as db:
+        try:
+            
+            query = """
+                SELECT
+                    i.id_inventario,
+                    i.nombre_inventario,
+                    COUNT(p.id_producto) AS cantidad_productos,
+                    SUM(CASE WHEN p.conteo IS NOT NULL AND p.conteo > 0 THEN 1 ELSE 0 END) AS cantidad_productos_con_conteo,
+                    SUM(CASE WHEN p.conteo IS NULL OR p.conteo < 1 THEN 1 ELSE 0 END) AS cantidad_productos_sin_conteo,
+                    i.fecha_creacion
+                FROM inventarios i
+                LEFT JOIN productos p ON i.id_inventario = p.id_inventario
+                GROUP BY i.id_inventario
+            """
+            db.execute(query)
+            inventarios = db.fetchall()
+            print("imprimir", inventarios)
+            respuesta = []
+            
+            for inventario in inventarios:
+                inventario_temporal = ConsultInventariosDashboard(
+                  id_inventario = inventario[0],
+                  nombre_inventario = inventario[1],
+                  cantidad_productos = inventario[2],
+                  cantidad_productos_con_conteo = inventario[3],
+                  cantidad_productos_sin_conteo = inventario[4],
+                  fecha_creacion = inventario[5]
+                  )
+                respuesta.append(inventario_temporal)
+            
+            return respuesta
 
-                # Inicializamos variables para estadísticas
-                total_productos = 0
-                total_productos_con_conteo = 0
-                max_productos = 0
-                min_productos = float('inf')
-                inventario_max = {}
-                inventario_min = {}
+        except Exception as e:
+            print(e)
+            return {"error": str(e)}
 
-                # Procesamos los datos obtenidos
-                for inventario in inventarios:
-                    cantidad_productos = inventario[2]
-                    cantidad_productos_con_conteo = inventario[3]
-                    total_productos += cantidad_productos
-                    total_productos_con_conteo += cantidad_productos_con_conteo
-
-                    # Encontramos el inventario con más productos
-                    if cantidad_productos > max_productos:
-                        max_productos = cantidad_productos
-                        inventario_max = {
-                            "id_inventario": inventario[0],
-                            "nombre_inventario": inventario[1],
-                            "cantidad_productos": cantidad_productos
-                        }
-
-                    # Encontramos el inventario con menos productos
-                    if cantidad_productos < min_productos:
-                        min_productos = cantidad_productos
-                        inventario_min = {
-                            "id_inventario": inventario[0],
-                            "nombre_inventario": inventario[1],
-                            "cantidad_productos": cantidad_productos
-                        }
-
-                return {
-                    "total_productos": total_productos,
-                    "total_productos_con_conteo": total_productos_con_conteo,
-                    "inventario_max": inventario_max,
-                    "inventario_min": inventario_min
-                }
-
-            except Exception as e:
-                print(e)
-                return {"error": str(e)}
