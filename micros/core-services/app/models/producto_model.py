@@ -8,7 +8,7 @@ class CreateProductoModel(BaseModel):
     id_inventario: int
     nombre: str
     descripcion: Optional[str] = None
-    cantidad: int
+    stock: int
     precio_unidad: float
     
     
@@ -16,7 +16,7 @@ class UpdateProductoModel(BaseModel):
     codigo_barras: Optional[int]
     nombre: Optional[str]
     descripcion: Optional[str]
-    cantidad: Optional[int]
+    stock: Optional[int]
     conteo: Optional[int]
     data: Optional[str]=None
     precio_unidad: Optional[float]
@@ -29,7 +29,7 @@ class ConsultProductoModel(BaseModel):
     codigo_barras: int | None = None
     nombre: str | None = None
     descripcion: str | None = None
-    cantidad: int | None = None
+    stock: int | None = None
     data: Optional[str]=None
     conteo: Optional[int] | None = None
     precio_unidad: float | None = None
@@ -44,7 +44,7 @@ class ConsultAllProductoModel(BaseModel):
     codigo_barras: str | None = None
     nombre: str | None = None
     descripcion: str | None = None
-    cantidad: int | None = None
+    stock: int | None = None
     data: Optional[str]=None
     conteo: Optional[int]| None = None
     precio_unidad: float | None = None
