@@ -10,7 +10,8 @@ from .routes import (auth_router,
     perfil_router,
     permisos_router,
     usuario_router,
-    producto_router)
+    producto_router,
+    file_router)
 
 app = FastAPI()
 
@@ -48,6 +49,10 @@ app.include_router(
 app.include_router(
    producto_router.router,
     tags=["product"],
+)
+app.include_router(
+   file_router.router,
+    tags=["file"],
 )
 @app.get("/", response_class=RedirectResponse, include_in_schema=False)
 async def docs():
