@@ -9,15 +9,20 @@ class InventarioController:
     async def create_inventario(self, inventario: CreateInventarioModel):
       with Database() as db:
         try:
+          
+            print(f"Datos recibidos para crear inventario: {inventario}")
+          
+            id_usuario = 6
+            id_perfil = 1
             # Obtener id_perfil del usuario
-            query_perfil = "SELECT id_perfil FROM usuarios WHERE id_usuario = %s"
-            db.execute(query_perfil, (inventario.id_usuario,))
-            perfil_result = db.fetchone()
+            # query_perfil = "SELECT id_perfil FROM usuarios WHERE id_usuario = %s"
+            # db.execute(query_perfil, (inventario.id_usuario,))
+            # perfil_result = db.fetchone()
             
-            if not perfil_result:
-                return {"error": "Usuario no encontrado"}
+            # if not perfil_result:
+            #     return {"error": "Usuario no encontrado"}
 
-            id_perfil = perfil_result[0]  # Extraemos el id_perfil
+            # id_perfil = perfil_result[0]  # Extraemos el id_perfil
             
             # Insertar en inventarios
             query_inventario = """
@@ -26,7 +31,7 @@ class InventarioController:
             """
             db.execute(
                 query_inventario,
-                (inventario.nombre_inventario, inventario.id_usuario, id_perfil),
+                (inventario.nombre_inventario, id_usuario, id_perfil),
             )
             
             query_last_id = "SELECT LAST_INSERT_ID();"
@@ -37,7 +42,7 @@ class InventarioController:
             return {
                 "id_inventario": id_inventario,
                 "nombre_inventario": inventario.nombre_inventario,
-                "id_usuario": inventario.id_usuario,
+                "id_usuario": id_usuario,
                 "id_perfil": id_perfil
             }
             
