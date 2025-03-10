@@ -10,7 +10,10 @@ router = APIRouter()
 
 @router.post("/createInventario", summary="Create an inventory")
 async def create_inventario(inventario: CreateInventarioModel, response: Response):
+    print("Recibido request para crear inventario:", inventario)
     res = await InventarioController().create_inventario(inventario)
+    print("Resultado de la creación de inventario:", res)
+    
     if "error" not in res:  # Verifica si no hubo un error
         response.status_code = 200  # Código 201 para "Creado"
     else:
