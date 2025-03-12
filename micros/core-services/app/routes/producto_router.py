@@ -46,6 +46,16 @@ async def get_all_productos(
     response.status_code = 200 if res else 400
     return res
   
+@router.get("/getAllProducts", summary="Get all products")
+async def get_all_products(
+  response: Response, 
+):
+    producto_controller = ProductController() 
+    res = await producto_controller.get_all_products()  
+
+    response.status_code = 200 if res else 400
+    return res
+  
 @router.delete("/deleteProducto/{id_producto}", summary="Delete Product")
 async def delete_producto_by_barcode(id_producto: str):
   res = await ProductController().delete_producto_by_barcode(id_producto)

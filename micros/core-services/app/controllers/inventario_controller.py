@@ -259,10 +259,12 @@ class InventarioController:
               db.execute("SELECT COUNT(*) FROM inventarios WHERE id_inventario = %s", (id_inventario,))
               if db.fetchone()[0] == 0:
                   return {"error": "Inventario no encontrado"}
+                
+              db.execute("DELETE FROM productos WHERE id_inventario = %s", (id_inventario,))
             
               db.execute("DELETE FROM inventarios WHERE id_inventario = %s", (id_inventario,))
               db.commit()
-              return {"message": "Inventario eliminado correctamente"}
+              return {"message": "Inventario y productos asociados eliminados correctamente"}
         except Exception as e:
           print(e)
           db.rollback()
