@@ -32,3 +32,8 @@ class ConsultInventariosDashboard(BaseModel):
     cantidad_productos_con_conteo: int
     cantidad_productos_sin_conteo: int
     fecha_creacion: datetime
+    
+class ConsultNameInventory(BaseModel):
+    
+    nombre_inventario: str
+    id_inventario: Optional[int]

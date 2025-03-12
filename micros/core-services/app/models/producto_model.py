@@ -25,6 +25,14 @@ class UpdateProductoModel(BaseModel):
     id_perfil: Optional[int] | None = None
     id_inventario: Optional[int] | None = None
     
+class UpdateConteoModel(BaseModel):
+    codigo_barras: Optional[int]
+    conteo: Optional[int]
+    id_producto: Optional[int] | None = None
+    id_usuario: Optional[int] | None = None
+    id_perfil: Optional[int] | None = None
+    id_inventario: Optional[int] | None = None
+    
 class ConsultProductoModel(BaseModel):
     codigo_barras: int | None = None
     nombre: str | None = None

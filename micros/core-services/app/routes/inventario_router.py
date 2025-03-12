@@ -20,8 +20,8 @@ async def create_inventario(inventario: CreateInventarioModel, response: Respons
         response.status_code = 400  # Código 400 para "Solicitud Incorrecta"
     return res
   
-@router.get("/inventarios", summary="Get inventory by id")
-async def get_inventario_by_id(response: Response, id_inventario: str):
+@router.get("/inventariosById/{id_inventario}", summary="Get inventory by id")
+async def get_inventario_by_id(response: Response, id_inventario: int):
   res = await InventarioController().get_inventario_by_id(id_inventario)
   if res:
     response.status_code = 200

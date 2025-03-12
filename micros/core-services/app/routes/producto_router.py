@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, Request, Body, File, UploadFile, FastAPI, Query
 from ..controllers.producto_controller import ProductController
-from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel, DeleteProductoModel
+from ..models.producto_model import CreateProductoModel, UpdateProductoModel, ConsultProductoModel, DeleteProductoModel, UpdateConteoModel
 # import openpyxl
 
 router = APIRouter()
@@ -34,14 +34,26 @@ async def update_producto(codigo_barras: str, response: Response, producto: Upda
     response.status_code = 400
   return res
 
+@router.put("/updateConteo/{codigo_barras}", summary="Update product")
+async def update_conteo(codigo_barras: str, response: Response, producto: UpdateConteoModel = Body(...)):
+  res = await ProductController().update_conteo(codigo_barras, producto)
+  if res:
+    response.status_code = 200
+  else:
+    response.status_code = 400
+  return res
+
 @router.get("/getAllProductos", summary="Get all products")
 async def get_all_productos(
   response: Response,
-    id_inventario: int = Query(..., description="ID of the inventory")  
+  id_inventario: int = Query(..., description="ID of the inventory"),
+  filter: str = None,
+  current_page: int = Query(1, ge=1),
+  page_size: int = Query(20, ge=1)   
 ):
     print(f"Recibido id_inventario: {id_inventario}")
     producto_controller = ProductController() 
-    res = await producto_controller.get_all_productos(id_inventario)  
+    res = await producto_controller.get_all_productos(id_inventario, filter, current_page, page_size)  
 
     response.status_code = 200 if res else 400
     return res

@@ -1,7 +1,7 @@
 from typing import List
 from uuid import uuid4 as uuid
 from ..mysql import Database
-from ..models.inventario_model import CreateInventarioModel, ConsultInventariosDashboard
+from ..models.inventario_model import CreateInventarioModel, ConsultInventariosDashboard, ConsultNameInventory
 
 
 class InventarioController:
@@ -214,16 +214,16 @@ class InventarioController:
     #           return {"error": str(e)}
 
       
-    async def get_inventario_by_id(self, id_inventario: str):
+    async def get_inventario_by_id(self, id_inventario: int):
       with Database() as db:
         try:
-          query = "SELECT id_inventario, id_usuario, usuarios_id_perfil, nombre_inventario FROM `inventarios` WHERE id_inventario = %s"
+          query = "SELECT nombre_inventario FROM inventarios WHERE id_inventario = %s"
           db.execute(query, (id_inventario,))
           inventario = db.fetchone()
           if not inventario:
             return None
-          return CreateInventarioModel(
-            id_inventario=inventario[0], id_usuario=inventario[1], usuarios_id_perfil=inventario[2], nombre_inventario=inventario[3]
+          return ConsultNameInventory(
+            nombre_inventario=inventario[0] 
           )
         except Exception as e:
           print(e)
