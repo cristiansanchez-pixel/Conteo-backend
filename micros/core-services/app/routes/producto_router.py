@@ -35,7 +35,7 @@ async def update_producto(codigo_barras: str, response: Response, producto: Upda
   return res
 
 @router.put("/updateConteo/{codigo_barras}", summary="Update product")
-async def update_conteo(codigo_barras: str, response: Response, producto: UpdateConteoModel = Body(...)):
+async def update_conteo(codigo_barras: int, response: Response, producto: UpdateConteoModel = Body(...)):
   res = await ProductController().update_conteo(codigo_barras, producto)
   if res:
     response.status_code = 200

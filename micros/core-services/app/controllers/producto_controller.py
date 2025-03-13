@@ -290,22 +290,23 @@ class ProductController:
             try:
                 query = """
                     UPDATE productos
-                    SET codigo_barras= %s, descripcion = %s, stock = %s, data = %s, conteo = %s
+                    SET codigo_barras= %s, stock = %s, data = %s
                     WHERE codigo_barras = %s;
                 """
                 db.execute(
                     query,
                     (
                         producto.codigo_barras,
-                        producto.descripcion,
                         producto.stock,
                         producto.data,
-                        producto.conteo,
                         codigo_barras,
                     ),
                 )
                 db.commit()
-                return {"codigo_barras": codigo_barras, "descripcion": producto.descripcion, "stock": producto.stock, "conteo": producto.conteo}
+                return {"codigo_barras": codigo_barras,
+                        "stock": producto.stock,
+                        "data": producto.data
+                        }
             except Exception as e:
                 print(e)
                 db.rollback()

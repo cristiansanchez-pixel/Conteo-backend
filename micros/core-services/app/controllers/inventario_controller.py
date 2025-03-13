@@ -229,7 +229,7 @@ class InventarioController:
           print(e)
           return {"error": str(e)}
       
-    async def update_inventario(self, id_inventario: int, id_usuario: int, nombre_inventario: str):
+    async def update_inventario(self, id_inventario: int, nombre_inventario: str):
       with Database() as db:
         try:
           query_inventario = """
