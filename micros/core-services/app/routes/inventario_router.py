@@ -47,15 +47,13 @@ async def get_all_inventarios(
     return res
 
 
-@router.put("/inventarios/{id_inventario}", summary="Update inventory")
+@router.put("/updateInventario/{id_inventario}", summary="Update inventory")
 async def update_inventario(
     id_inventario: int,
     request: UpdateInventarioModel
 ):
   
-    id_usuario = request.id_usuario
-    nombre_inventario = request.nombre_inventario
-    res = await InventarioController().update_inventario(id_inventario, id_usuario, nombre_inventario)
+    res = await InventarioController().update_inventario(id_inventario, request.nombre_inventario)
     
     if not res:
         raise HTTPException(status_code=400, detail="No se pudo actualizar el inventario")

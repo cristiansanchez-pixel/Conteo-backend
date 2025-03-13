@@ -234,13 +234,12 @@ class InventarioController:
         try:
           query_inventario = """
             UPDATE inventarios
-            SET id_usuario = %s, nombre_inventario = %s
+            SET nombre_inventario = %s
             WHERE id_inventario = %s;
           """
           db.execute(
             query_inventario,
             (
-                id_usuario,
                 nombre_inventario,
                 id_inventario
             ),

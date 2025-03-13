@@ -11,7 +11,6 @@ class CreateInventarioModel(BaseModel):
     
 class UpdateInventarioModel(BaseModel):
     nombre_inventario: str
-    id_usuario: int
     
 class ConsultInventarioModel(BaseModel):
     id_inventario: int
