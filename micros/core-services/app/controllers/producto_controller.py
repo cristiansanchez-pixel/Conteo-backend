@@ -77,7 +77,10 @@ class ProductController:
             params = [id_inventario]
 
             if filter:
-                query += " AND (p.descripcion LIKE %s OR p.codigo_barras LIKE %s)"
+                query += """
+                    AND (JSON_UNQUOTE(JSON_EXTRACT(p.data, '$.DESCRIPCION')) LIKE %s 
+                    OR p.codigo_barras LIKE %s)
+                """
                 params.extend([f"%{filter}%", f"%{filter}%"])
 
 

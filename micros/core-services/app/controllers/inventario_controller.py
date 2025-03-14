@@ -90,8 +90,8 @@ class InventarioController:
                     ON i.id_usuario = u.id_usuario
             """
             if filter:
-                query += """ WHERE i.nombre_inventario LIKE %s """
-                params.append(f"%{filter}%")
+                query += """ WHERE i.id_inventario LIKE %s OR i.nombre_inventario LIKE %s """
+                params.extend([f"%{filter}%", f"%{filter}%"])
 
             query += " GROUP BY i.id_inventario"
 
@@ -101,9 +101,10 @@ class InventarioController:
                 query += " ORDER BY i.nombre_inventario ASC"
 
             if current_page is not None and page_size is not None:
-                query += " LIMIT %s OFFSET %s"
-                params.append(page_size)
-                params.append((current_page - 1) * page_size)
+                offset = (current_page - 1) * page_size
+                query += f" LIMIT %s OFFSET %s"
+                params.extend([page_size, offset])
+                
 
             db.execute(query, params)
             inventarios = db.fetchall()
